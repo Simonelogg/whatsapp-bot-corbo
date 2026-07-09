@@ -6,7 +6,7 @@ app.use(bodyParser.json());
 
 // Inserisci qui la tua password inventata. 
 // Dovrai scrivere ESATTAMENTE questa nella dashboard di Meta ("Verifica il token")
-const VERIFY_TOKEN = 'MioTokenSegreto123'; 
+const VERIFY_TOKEN = 'T@kenSuperSegretissim@1999'; 
 
 // 1. Endpoint per la VERIFICA del Webhook (Richiesta GET di Meta)
 app.get('/webhook', (req, res) => {
