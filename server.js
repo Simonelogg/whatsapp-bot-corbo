@@ -4,9 +4,21 @@ const bodyParser = require('body-parser');
 const app = express();
 app.use(bodyParser.json());
 
-// Inserisci qui la tua password inventata. 
-// Dovrai scrivere ESATTAMENTE questa nella dashboard di Meta ("Verifica il token")
-const VERIFY_TOKEN = 'T@kenSuperSegretissim@1999'; 
+// Token: SOLO da variabili d'ambiente (Railway -> Variables), mai scritti qui nel codice
+// (questo file finisce su GitHub). Senza configurarli il bot parte comunque, ma rifiuta
+// sia la verifica webhook di Meta sia le richieste di polling del gestionale.
+const VERIFY_TOKEN = process.env.VERIFY_TOKEN || null;
+const POLL_SECRET  = process.env.POLL_SECRET  || null;
+
+if (!VERIFY_TOKEN) console.warn('⚠️  VERIFY_TOKEN non impostato su Railway: la verifica webhook di Meta fallira\'.');
+if (!POLL_SECRET)  console.warn('⚠️  POLL_SECRET non impostato su Railway: il gestionale non potra\' prelevare i messaggi.');
+
+// Coda dei messaggi ricevuti, in memoria: il gestionale la svuota periodicamente
+// interrogando GET /messages. Tenuta limitata a MAX_QUEUE per non crescere all'infinito
+// se per qualche motivo il gestionale smette di interrogarla.
+const MAX_QUEUE = 1000;
+let messageQueue = [];
+let nextId = 1;
 
 // 1. Endpoint per la VERIFICA del Webhook (Richiesta GET di Meta)
 app.get('/webhook', (req, res) => {
@@ -32,14 +44,34 @@ app.post('/webhook', (req, res) => {
     if (body.object) {
         if (body.entry && body.entry[0].changes && body.entry[0].changes[0].value.messages && body.entry[0].changes[0].value.messages[0]) {
             let from = body.entry[0].changes[0].value.messages[0].from; // Chi ti scrive
-            let msg_body = body.entry[0].changes[0].value.messages[0].text.body; // Testo del msg
+            let msg_body = body.entry[0].changes[0].value.messages[0].text?.body || '(messaggio non testuale)';
 
             console.log(`📩 Nuovo messaggio da ${from}: "${msg_body}"`);
+
+            messageQueue.push({
+                id: nextId++,
+                from,
+                text: msg_body,
+                timestamp: new Date().toISOString()
+            });
+            if (messageQueue.length > MAX_QUEUE) {
+                messageQueue = messageQueue.slice(messageQueue.length - MAX_QUEUE);
+            }
         }
-        res.sendStatus(200); 
+        res.sendStatus(200);
     } else {
         res.sendStatus(404);
     }
+});
+
+// 3. Endpoint interrogato dal gestionale per prelevare i messaggi nuovi.
+// "after" = ID dell'ultimo messaggio gia' importato: restituisce solo quelli successivi,
+// cosi' un giro di polling in ritardo o fallito non perde nulla (li richiede al giro dopo).
+app.get('/messages', (req, res) => {
+    if (req.query.key !== POLL_SECRET) return res.sendStatus(403);
+    const afterId = parseInt(req.query.after, 10) || 0;
+    const batch = messageQueue.filter(m => m.id > afterId);
+    res.json({ messages: batch });
 });
 
 // Usa la porta fornita dall'ambiente (necessario per Railway) o 3000 in locale
