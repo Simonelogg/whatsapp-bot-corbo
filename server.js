@@ -4,7 +4,8 @@ const fs = require('fs');
 const path = require('path');
 
 const app = express();
-app.use(bodyParser.json());
+app.use(bodyParser.json({ limit: '10mb' }));
+app.use(bodyParser.urlencoded({ extended: true, limit: '10mb' }));
 
 // Token: SOLO da variabili d'ambiente (Railway -> Variables), mai scritti nel codice.
 const VERIFY_TOKEN = process.env.VERIFY_TOKEN || null;
@@ -59,6 +60,10 @@ function saveState() {
 
 // Inizializza i dati all'avvio
 loadState();
+
+// Modulo Anamnesi Digitale
+const { setupAnamnesiRoutes } = require('./anamnesi');
+const anamnesi = setupAnamnesiRoutes(app, { DATA_DIR, POLL_SECRET });
 
 // 0. Endpoint di salute e monitoraggio
 app.get('/health', (req, res) => {
@@ -233,7 +238,8 @@ const server = app.listen(PORT, () => console.log(`🚀 Server in ascolto sulla 
 function gracefulShutdown(signal) {
     console.log(`🛑 Segnale ${signal} ricevuto: salvataggio coda e chiusura pulita...`);
     try {
-        saveQueueToDisk();
+        saveState();
+        if (anamnesi && anamnesi.saveAnamnesiState) anamnesi.saveAnamnesiState();
     } catch (e) {
         console.error('Errore salvataggio durante shutdown:', e.message);
     }
