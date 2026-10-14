@@ -124,8 +124,13 @@ app.post('/webhook', (req, res) => {
                         continue;
                     }
 
-                    // Estrazione testo a seconda della tipologia
+                    // Estrazione testo e metadati multimediali
                     let msgText = '';
+                    let mediaId = null;
+                    let mediaType = null;
+                    let mimeType = null;
+                    let isVoice = false;
+
                     if (type === 'text') {
                         msgText = msg.text?.body || '';
                     } else if (type === 'button') {
@@ -134,8 +139,17 @@ app.post('/webhook', (req, res) => {
                         msgText = msg.interactive?.button_reply?.title 
                                || msg.interactive?.list_reply?.title 
                                || '';
-                    } else if (['image', 'audio', 'video', 'document', 'sticker'].includes(type)) {
+                    } else if (type === 'audio') {
+                        mediaId = msg.audio?.id || null;
+                        mediaType = 'audio';
+                        mimeType = msg.audio?.mime_type || 'audio/ogg';
+                        isVoice = Boolean(msg.audio?.voice);
+                        msgText = isVoice ? '🎤 [Messaggio vocale]' : '🎵 [Allegato audio]';
+                    } else if (['image', 'video', 'document', 'sticker'].includes(type)) {
                         const mediaObj = msg[type] || {};
+                        mediaId = mediaObj.id || null;
+                        mediaType = type;
+                        mimeType = mediaObj.mime_type || null;
                         const detail = mediaObj.caption ? `: ${mediaObj.caption}` : (mediaObj.filename ? `: ${mediaObj.filename}` : '');
                         msgText = `[Allegato ${type}${detail}]`;
                     } else {
@@ -151,7 +165,7 @@ app.post('/webhook', (req, res) => {
                         msgTimestamp = new Date().toISOString();
                     }
 
-                    console.log(`📩 [${type}] da ${from} (${profileName || 'paziente'}): "${msgText}"`);
+                    console.log(`📩 [${type}] da ${from} (${profileName || 'paziente'}): "${msgText}"${mediaId ? ` [media: ${mediaId}]` : ''}`);
 
                     messageQueue.push({
                         id: nextId++,
@@ -160,6 +174,10 @@ app.post('/webhook', (req, res) => {
                         senderName: profileName,
                         type,
                         text: msgText,
+                        mediaId,
+                        mediaType,
+                        mimeType,
+                        isVoice,
                         timestamp: msgTimestamp
                     });
                     addedCount++;
