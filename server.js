@@ -209,4 +209,34 @@ app.get('/messages', (req, res) => {
 });
 
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`🚀 Server in ascolto sulla porta ${PORT} (dati in ${DATA_DIR})`));
+const server = app.listen(PORT, () => console.log(`🚀 Server in ascolto sulla porta ${PORT} (dati in ${DATA_DIR})`));
+
+// Gestione arresto pulito (SIGTERM inviato da Railway nei redeploy)
+function gracefulShutdown(signal) {
+    console.log(`🛑 Segnale ${signal} ricevuto: salvataggio coda e chiusura pulita...`);
+    try {
+        saveQueueToDisk();
+    } catch (e) {
+        console.error('Errore salvataggio durante shutdown:', e.message);
+    }
+    server.close(() => {
+        console.log('✅ Server HTTP chiuso con successo.');
+        process.exit(0);
+    });
+    setTimeout(() => {
+        console.warn('⚠️ Timeout shutdown forzato (3s).');
+        process.exit(0);
+    }, 3000);
+}
+
+process.on('SIGTERM', () => gracefulShutdown('SIGTERM'));
+process.on('SIGINT', () => gracefulShutdown('SIGINT'));
+
+process.on('uncaughtException', (err) => {
+    console.error('❌ Errore non catturato (uncaughtException):', err);
+});
+
+process.on('unhandledRejection', (reason) => {
+    console.error('❌ Promise rejection non gestita:', reason);
+});
+
