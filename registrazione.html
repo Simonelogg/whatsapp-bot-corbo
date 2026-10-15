@@ -1,0 +1,828 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Registrazione paziente – Centro Dentale Corbo</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+:root {
+    --primary: #0d47a1;
+    --primary-light: #1e88e5;
+    --success: #10b981;
+    --warning: #f59e0b;
+    --danger: #ef4444;
+    --bg: #f4f7fc;
+    --card: #ffffff;
+    --text: #1e293b;
+    --text-muted: #64748b;
+    --border: #e2e8f0;
+    --radius: 14px;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; -webkit-tap-highlight-color: transparent; }
+body { -webkit-user-select: none; user-select: none; overscroll-behavior: none; background: var(--bg); color: var(--text); padding-bottom: 50px; font-size: 15px; line-height: 1.5; }
+
+/* Header */
+.tablet-header {
+    background: #fff;
+    border-bottom: 1.5px solid var(--border);
+    padding: 14px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.03);
+}
+.tablet-header img { height: 42px; object-fit: contain; }
+.kiosk-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: #eef2ff;
+    color: var(--primary);
+    font-weight: 700;
+    font-size: 13px;
+    padding: 6px 14px;
+    border-radius: 20px;
+    border: 1px solid #c7d2fe;
+}
+.kiosk-badge .dot {
+    width: 8px;
+    height: 8px;
+    background: var(--success);
+    border-radius: 50%;
+    box-shadow: 0 0 6px var(--success);
+}
+
+.container { max-width: 760px; margin: 24px auto; padding: 0 20px; }
+
+/* ── VISTA STANDBY ── */
+.standby-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 65vh;
+    text-align: center;
+    padding: 40px 20px;
+}
+.standby-icon {
+    width: 100px;
+    height: 100px;
+    background: #e0f2fe;
+    color: #0284c7;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 44px;
+    margin-bottom: 24px;
+    animation: pulse 2.5s infinite;
+}
+@keyframes pulse {
+    0% { transform: scale(0.96); box-shadow: 0 0 0 0 rgba(2, 132, 199, 0.4); }
+    70% { transform: scale(1.04); box-shadow: 0 0 0 16px rgba(2, 132, 199, 0); }
+    100% { transform: scale(0.96); box-shadow: 0 0 0 0 rgba(2, 132, 199, 0); }
+}
+.standby-title { font-size: 24px; font-weight: 800; color: #0f172a; margin-bottom: 8px; }
+.standby-sub { font-size: 15px; color: var(--text-muted); max-width: 440px; margin-bottom: 24px; line-height: 1.6; }
+.standby-indicator {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #0284c7;
+    background: #f0f9ff;
+    padding: 8px 18px;
+    border-radius: 20px;
+    border: 1px solid #bae6fd;
+}
+
+/* ── VISTA FORM COMPILAZIONE ── */
+.hero-card {
+    background: linear-gradient(135deg, #0d47a1 0%, #1e88e5 100%);
+    color: #fff;
+    border-radius: var(--radius);
+    padding: 24px 22px;
+    margin-bottom: 20px;
+    box-shadow: 0 8px 22px rgba(13, 71, 161, 0.16);
+}
+.hero-card h1 { font-size: 21px; font-weight: 800; margin-bottom: 6px; }
+.hero-card p { font-size: 14px; opacity: 0.9; margin-bottom: 14px; }
+.patient-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(4px);
+    padding: 8px 16px;
+    border-radius: 24px;
+    font-size: 14.5px;
+    font-weight: 700;
+}
+
+.section-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 22px 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.03);
+}
+.section-title { font-size: 16px; font-weight: 800; color: #0f172a; margin-bottom: 14px; display: flex; align-items: center; gap: 9px; }
+.section-title i { color: var(--primary-light); }
+.section-desc { font-size: 13px; color: var(--text-muted); margin-top: -8px; margin-bottom: 16px; }
+
+.section-card.critical { border-color: #fcd34d; background: #fffdf5; }
+.section-card.critical .section-title { color: #b45309; }
+.section-card.critical .section-title i { color: #f59e0b; }
+
+/* Questions Cards */
+.q-card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 14px 16px;
+    border-radius: 10px;
+    background: #f8fafc;
+    border: 1.5px solid #f1f5f9;
+    margin-bottom: 10px;
+    transition: all 0.2s ease;
+}
+.q-card.is-yes { background: #ecfdf5; border-color: #a7f3d0; }
+.q-label { font-size: 14px; font-weight: 600; color: #334155; flex: 1; }
+.q-toggle-wrap { display: flex; background: #e2e8f0; border-radius: 8px; padding: 3px; gap: 3px; flex-shrink: 0; }
+.btn-toggle {
+    border: none;
+    background: transparent;
+    padding: 8px 20px;
+    font-size: 14px;
+    font-weight: 800;
+    border-radius: 6px;
+    cursor: pointer;
+    color: #64748b;
+    transition: all 0.15s ease;
+}
+.btn-toggle.no.active { background: #fff; color: #334155; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+.btn-toggle.yes.active { background: var(--success); color: #fff; box-shadow: 0 1px 4px rgba(16,185,129,0.35); }
+
+/* Form inputs */
+.form-group { margin-bottom: 16px; }
+.form-group label { display: block; font-size: 13.5px; font-weight: 700; color: #475569; margin-bottom: 6px; }
+input, textarea { -webkit-user-select: text; user-select: text; }
+.form-control { width: 100%; border: 1.5px solid var(--border); border-radius: 10px; padding: 12px 14px; font-size: 14px; font-family: inherit; color: var(--text); }
+.form-control:focus { outline: none; border-color: var(--primary); }
+textarea.form-control { resize: vertical; min-height: 80px; }
+
+/* Signature Pad */
+.signature-box { border: 2px dashed #cbd5e1; border-radius: 12px; background: #fafafa; padding: 8px; position: relative; margin-top: 10px; touch-action: none; }
+.signature-box.has-signature { border-color: var(--primary-light); background: #fff; }
+#signature-canvas { width: 100%; height: 190px; display: block; background: #fff; border-radius: 8px; cursor: crosshair; touch-action: none; }
+.sig-hint { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: #94a3b8; font-size: 15px; font-weight: 600; pointer-events: none; display: flex; align-items: center; gap: 8px; }
+.sig-actions { display: flex; justify-content: flex-end; margin-top: 10px; }
+.btn-clear-sig { background: #fff; border: 1.5px solid #cbd5e1; color: #64748b; font-size: 13px; font-weight: 700; padding: 8px 16px; border-radius: 8px; cursor: pointer; display: flex; align-items: center; gap: 6px; }
+.btn-clear-sig:hover { background: #f1f5f9; color: var(--danger); }
+
+/* Consent checkbox */
+.consent-box { display: flex; align-items: flex-start; gap: 12px; background: #f1f5f9; border-radius: 10px; padding: 14px 16px; margin-top: 16px; font-size: 13.5px; line-height: 1.5; color: #475569; cursor: pointer; }
+.consent-box input[type="checkbox"] { width: 22px; height: 22px; margin-top: 2px; accent-color: var(--primary); flex-shrink: 0; cursor: pointer; }
+
+/* Submit Button */
+.submit-btn-wrap { margin-top: 28px; }
+.btn-submit { width: 100%; background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: #fff; border: none; padding: 18px; border-radius: var(--radius); font-size: 17px; font-weight: 800; letter-spacing: 0.3px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; box-shadow: 0 4px 16px rgba(16,185,129,0.35); transition: all 0.2s; }
+.btn-submit:hover:not(:disabled) { transform: translateY(-1px); box-shadow: 0 6px 22px rgba(16,185,129,0.45); }
+.btn-submit:disabled { opacity: 0.6; cursor: not-allowed; }
+
+/* Alert */
+.form-alert { padding: 14px 18px; border-radius: 10px; font-size: 14px; font-weight: 700; margin-bottom: 16px; display: none; }
+.form-alert.error { background: #fef2f2; border: 1.5px solid #fecaca; color: #b91c1c; display: block; }
+
+/* Success Card */
+.success-wrapper { display: none; text-align: center; padding: 50px 20px; }
+.success-icon { width: 84px; height: 84px; background: #dcfce7; color: #10b981; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 42px; margin: 0 auto 24px; }
+.success-title { font-size: 24px; color: #065f46; font-weight: 800; margin-bottom: 10px; }
+.success-sub { font-size: 16px; color: #475569; max-width: 460px; margin: 0 auto 20px; line-height: 1.6; }
+
+
+/* Selezione data di nascita a schermate separate (giorno -> mese -> anno) */
+.dob-btn { text-align: left; background: #fff; color: #94a3b8; cursor: pointer; min-height: 48px; }
+.dob-btn.has-value { color: var(--text); font-weight: 700; }
+#dob-overlay { position: fixed; inset: 0; background: #fff; z-index: 300; display: none; flex-direction: column; }
+.dob-head { display: flex; align-items: center; justify-content: space-between; padding: 16px 20px; border-bottom: 1.5px solid var(--border); }
+.dob-title { font-size: 22px; font-weight: 800; color: #0f172a; text-align: center; flex: 1; }
+.dob-sub { font-size: 14px; font-weight: 600; color: var(--text-muted); display: block; margin-top: 2px; }
+.dob-nav { background: #f1f5f9; border: 1.5px solid #cbd5e1; border-radius: 10px; padding: 12px 18px; font-size: 15px; font-weight: 700; color: #475569; cursor: pointer; min-width: 110px; }
+.dob-nav:disabled { opacity: 0; cursor: default; }
+.dob-body { flex: 1; overflow-y: auto; padding: 20px; }
+.dob-grid { display: grid; gap: 12px; max-width: 760px; margin: 0 auto; }
+.dob-grid.g-days { grid-template-columns: repeat(7, 1fr); }
+.dob-grid.g-months { grid-template-columns: repeat(3, 1fr); }
+.dob-grid.g-years { grid-template-columns: repeat(5, 1fr); }
+.dob-cell { background: #f8fafc; border: 2px solid #e2e8f0; border-radius: 14px; padding: 18px 4px; font-size: 22px; font-weight: 800; color: #1e293b; cursor: pointer; }
+.dob-cell:active { background: var(--primary); color: #fff; border-color: var(--primary); }
+.dob-cell.sel { background: var(--primary); color: #fff; border-color: var(--primary); }
+.g-months .dob-cell { font-size: 20px; padding: 26px 4px; }
+.dob-decades { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; max-width: 760px; margin: 0 auto 18px; }
+.dob-dec { background: #eef2ff; border: 1.5px solid #c7d2fe; color: var(--primary); border-radius: 22px; padding: 10px 16px; font-size: 16px; font-weight: 800; cursor: pointer; }
+.dob-dec.sel { background: var(--primary); color: #fff; }
+.dob-err { max-width: 760px; margin: 0 auto 14px; }
+@media (max-width: 560px) { .dob-grid.g-days { grid-template-columns: repeat(5, 1fr); } .dob-grid.g-years { grid-template-columns: repeat(3, 1fr); } }
+
+/* Login / scelta tablet */
+.center-card { max-width: 420px; margin: 8vh auto; background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 28px 24px; box-shadow: 0 6px 20px rgba(0,0,0,0.05); text-align: center; }
+.center-card h2 { font-size: 20px; margin-bottom: 6px; }
+.center-card p { color: var(--text-muted); font-size: 14px; margin-bottom: 18px; }
+.btn-primary-lg { width: 100%; background: var(--primary); color: #fff; border: none; padding: 14px; border-radius: 12px; font-size: 16px; font-weight: 800; cursor: pointer; margin-top: 6px; }
+.btn-choice { width: 48%; background: #eef2ff; color: var(--primary); border: 1.5px solid #c7d2fe; padding: 22px 0; border-radius: 12px; font-size: 18px; font-weight: 800; cursor: pointer; }
+.link-quiet { background: none; border: none; color: #94a3b8; font-size: 12px; cursor: pointer; text-decoration: underline; margin-top: 18px; }
+.grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 0 14px; }
+.grid3 { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 0 14px; }
+@media (max-width: 560px) { .grid2, .grid3 { grid-template-columns: 1fr; } }
+.ac-wrap { position: relative; }
+.ac-list { position: absolute; left: 0; right: 0; top: 100%; background: #fff; border: 1.5px solid var(--border); border-radius: 10px; z-index: 50; max-height: 220px; overflow-y: auto; box-shadow: 0 8px 20px rgba(0,0,0,0.08); display: none; }
+.ac-item { display: block; width: 100%; text-align: left; padding: 11px 14px; background: none; border: none; border-bottom: 1px solid #f1f5f9; font-size: 14px; cursor: pointer; }
+.ac-item:hover { background: #f1f5f9; }
+.cf-status { font-size: 12.5px; font-weight: 700; margin-top: 6px; min-height: 18px; }
+.cf-status.ok { color: #059669; }
+.cf-status.ko { color: #b91c1c; }
+.check-line { display: flex; align-items: center; gap: 8px; font-size: 13.5px; color: #475569; margin: -6px 0 14px; cursor: pointer; }
+.check-line input { width: 20px; height: 20px; accent-color: var(--primary); }
+.req { color: var(--danger); }
+</style>
+</head>
+<body>
+
+<header class="tablet-header">
+    <img src="https://www.centrodentalecorbo.it/wp-content/uploads/2021/08/logo-definitivo-450.png" alt="Centro Dentale Corbo">
+    <div class="kiosk-badge"><span class="dot"></span><span>Modulo sicuro</span></div>
+</header>
+
+<!-- 2. FORM PRE-REGISTRAZIONE -->
+<div id="view-form" class="container">
+    <div class="hero-card">
+        <h1>Registrazione e Anamnesi</h1>
+        <p>Compili i suoi dati, risponda alle domande sanitarie e apponga la firma con il dito. Occorrono pochi minuti.</p>
+    </div>
+
+    <form id="tablet-form" autocomplete="off" novalidate>
+        <div id="tablet-error" class="form-alert"></div>
+
+        <div class="section-card">
+            <div class="section-title"><i class="fa-solid fa-id-card"></i> Dati anagrafici</div>
+            <div class="grid2">
+                <div class="form-group"><label for="f-cognome">Cognome <span class="req">*</span></label><input id="f-cognome" class="form-control" type="text" autocapitalize="words"></div>
+                <div class="form-group"><label for="f-nome">Nome <span class="req">*</span></label><input id="f-nome" class="form-control" type="text" autocapitalize="words"></div>
+            </div>
+            <div class="grid2">
+                <div class="form-group"><label for="f-sesso">Sesso <span class="req">*</span></label>
+                    <select id="f-sesso" class="form-control"><option value="">Seleziona...</option><option value="0">Femmina</option><option value="1">Maschio</option></select>
+                </div>
+                <div class="form-group"><label for="btn-nascita">Data di nascita <span class="req">*</span></label>
+                    <input id="f-nascita" type="hidden">
+                    <button type="button" id="btn-nascita" class="form-control dob-btn">Tocchi per scegliere la data</button>
+                </div>
+            </div>
+            <div class="form-group" id="group-genitore" style="display:none;">
+                <label for="f-genitore">Paziente minorenne: nome e cognome del genitore o tutore <span class="req">*</span></label>
+                <input id="f-genitore" class="form-control" type="text" autocapitalize="words">
+            </div>
+            <label class="check-line"><input type="checkbox" id="f-estero"> Sono nato/a all'estero</label>
+            <div class="form-group ac-wrap">
+                <label for="f-luogo" id="lbl-luogo">Comune di nascita <span class="req">*</span></label>
+                <input id="f-luogo" class="form-control" type="text" placeholder="Digiti le prime lettere e scelga dall'elenco">
+                <div id="ac-luogo" class="ac-list"></div>
+            </div>
+            <div class="form-group">
+                <label for="f-cf">Codice fiscale <span class="req">*</span></label>
+                <input id="f-cf" class="form-control" type="text" maxlength="16" autocapitalize="characters" style="text-transform:uppercase;letter-spacing:1px;">
+                <div id="cf-status" class="cf-status"></div>
+                <div id="cf-note" style="font-size:12.5px;color:#64748b;margin-top:2px;display:none;">Calcolato automaticamente dai dati inseriti: verifichi che sia uguale a quello sulla sua tessera sanitaria. Se è diverso lo può correggere.</div>
+            </div>
+        </div>
+
+        <div class="section-card">
+            <div class="section-title"><i class="fa-solid fa-house"></i> Residenza e contatti</div>
+            <div class="grid3">
+                <div class="form-group"><label for="f-indirizzo">Indirizzo</label><input id="f-indirizzo" class="form-control" type="text"></div>
+                <div class="form-group"><label for="f-civico">N° civico</label><input id="f-civico" class="form-control" type="text"></div>
+                <div class="form-group"><label for="f-cap">CAP</label><input id="f-cap" class="form-control" type="text" inputmode="numeric" maxlength="5"></div>
+            </div>
+            <div class="grid2">
+                <div class="form-group ac-wrap"><label for="f-citta">Città</label><input id="f-citta" class="form-control" type="text" placeholder="Digiti le prime lettere e scelga dall'elenco"><div id="ac-citta" class="ac-list"></div></div>
+                <div class="form-group"><label for="f-provincia">Provincia</label><input id="f-provincia" class="form-control" type="text" maxlength="2" style="text-transform:uppercase;"></div>
+            </div>
+            <div class="grid2">
+                <div class="form-group"><label for="f-cellulare">Cellulare <span class="req">*</span></label><input id="f-cellulare" class="form-control" type="tel" inputmode="tel"></div>
+                <div class="form-group"><label for="f-email">Email</label><input id="f-email" class="form-control" type="email" autocapitalize="off"></div>
+            </div>
+        </div>
+
+        <!-- Cartelle statiche delle allergie: vengono spostate dentro la sezione "Allergie" al rendering -->
+        <div id="allergie-static-holder" style="display:none;">
+            <div class="q-card" id="card-crit-anestetico">
+                <div class="q-label">Ha mai manifestato allergie ad <strong>anestetici locali</strong>?</div>
+                <div class="q-toggle-wrap">
+                    <button type="button" class="btn-toggle no active" data-val="no">NO</button>
+                    <button type="button" class="btn-toggle yes" data-val="yes">SÌ</button>
+                </div>
+            </div>
+            <div class="form-group" id="group-anestetico-spec" style="display:none; margin-top:8px; padding-left: 6px;">
+                <label for="anestetico-specifica">Specificare l'anestetico o la reazione avuta:</label>
+                <input type="text" id="anestetico-specifica" class="form-control" placeholder="es. lidocaina, tachicardia...">
+            </div>
+
+            <div class="q-card" id="card-crit-farmaci">
+                <div class="q-label">Ha <strong>allergie a farmaci</strong> (es. antibiotici, antinfiammatori)?</div>
+                <div class="q-toggle-wrap">
+                    <button type="button" class="btn-toggle no active" data-val="no">NO</button>
+                    <button type="button" class="btn-toggle yes" data-val="yes">SÌ</button>
+                </div>
+            </div>
+            <div class="form-group" id="group-farmaci-spec" style="display:none; margin-top:8px; padding-left: 6px;">
+                <label for="farmaci-specifica">Specificare a quali farmaci:</label>
+                <input type="text" id="farmaci-specifica" class="form-control" placeholder="es. penicillina, ibuprofene...">
+            </div>
+
+            <div class="q-card" id="card-crit-lattice">
+                <div class="q-label">Ha allergia accertata al <strong>lattice</strong> (guanti, diga)?</div>
+                <div class="q-toggle-wrap">
+                    <button type="button" class="btn-toggle no active" data-val="no">NO</button>
+                    <button type="button" class="btn-toggle yes" data-val="yes">SÌ</button>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="section-card critical">
+            <div class="section-title"><i class="fa-solid fa-heart-pulse"></i> Avvisi Clinici Fondamentali</div>
+            <div class="section-desc">Dispositivi medici impiantati.</div>
+            <div class="q-card" id="card-crit-pacemaker">
+                <div class="q-label">È portatore di <strong>pacemaker o defibrillatore</strong>?</div>
+                <div class="q-toggle-wrap">
+                    <button type="button" class="btn-toggle no active" data-val="no">NO</button>
+                    <button type="button" class="btn-toggle yes" data-val="yes">SÌ</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="dynamic-questions-container"></div>
+
+        <div class="section-card">
+            <div class="section-title"><i class="fa-solid fa-file-pen"></i> Terapie Farmacologiche e Note</div>
+            <div class="form-group">
+                <label for="farmaci-prescritti">Farmaci assunti regolarmente (nome e dosaggio):</label>
+                <textarea id="farmaci-prescritti" class="form-control" placeholder="es. Cardioaspirina, Eutirox... (lasciare vuoto se nessuno)"></textarea>
+            </div>
+            <div class="form-group">
+                <label for="altre-malattie">Altre patologie degne di nota per il dentista:</label>
+                <textarea id="altre-malattie" class="form-control" placeholder="Segnala qualsiasi altro dettaglio utile..."></textarea>
+            </div>
+        </div>
+
+        <div class="section-card">
+            <div class="section-title"><i class="fa-solid fa-signature"></i> Firma del Paziente</div>
+            <div class="section-desc">Tracci la sua firma nel riquadro sottostante con il dito o con il pennino (se minorenne, firma il genitore o tutore).</div>
+            <div class="signature-box" id="sig-box">
+                <canvas id="signature-canvas"></canvas>
+                <div class="sig-hint" id="sig-hint"><i class="fa-solid fa-pen"></i> Firmi qui con il dito</div>
+            </div>
+            <div class="sig-actions">
+                <button type="button" id="btn-clear-sig" class="btn-clear-sig"><i class="fa-solid fa-rotate-left"></i> Cancella / Rifai firma</button>
+            </div>
+            <label class="consent-box">
+                <input type="checkbox" id="privacy-consent">
+                <span>Confermo la veridicità dei dati forniti e presto il consenso al trattamento dei miei dati personali e sanitari da parte del <strong>Centro Dentale Corbo</strong> ai sensi del GDPR (Reg. UE 2016/679).</span>
+            </label>
+        </div>
+
+        <div class="submit-btn-wrap">
+            <button type="submit" id="btn-submit" class="btn-submit"><i class="fa-solid fa-circle-check"></i> Conferma e Invia</button>
+        </div>
+    </form>
+</div>
+
+<!-- Selezione data di nascita: una schermata per giorno, mese e anno -->
+<div id="dob-overlay">
+    <div class="dob-head">
+        <button type="button" class="dob-nav" id="dob-back">&larr; Indietro</button>
+        <div class="dob-title"><span id="dob-title">Giorno di nascita</span><span class="dob-sub" id="dob-sub"></span></div>
+        <button type="button" class="dob-nav" id="dob-close">Annulla</button>
+    </div>
+    <div class="dob-body">
+        <div id="dob-err" class="form-alert dob-err"></div>
+        <div id="dob-content"></div>
+    </div>
+</div>
+
+<!-- 3. ESITO (successo / già registrata) -->
+<div id="view-success" class="container success-wrapper">
+    <div class="success-icon" id="res-icon"><i class="fa-solid fa-check"></i></div>
+    <div class="success-title" id="res-title">Registrazione inviata!</div>
+    <div class="success-sub" id="res-sub">Grazie! I suoi dati e la firma sono stati inviati al Centro Dentale Corbo. Può chiudere questa pagina.</div>
+</div>
+
+<script>
+(function() {
+    const $ = (id) => document.getElementById(id);
+    const TOKEN = __TOKEN__;
+    const QUESTIONS = __QUESTIONS__;
+    const BASE = '/anamnesi/' + TOKEN;
+    const views = ['view-form', 'view-success'];
+    function show(id) {
+        views.forEach(v => { $(v).style.display = (v === id) ? 'block' : 'none'; });
+        window.scrollTo({ top: 0 });
+    }
+
+    // Chiamate al servizio: GET per le ricerche (comuni, CF), POST (url = BASE) per l'invio
+    async function api(url, opts = {}) {
+        const res = await fetch(url, Object.assign({}, opts, { headers: { 'Content-Type': 'application/json' } }));
+        let data = {};
+        try { data = await res.json(); } catch (_) {}
+        if (!res.ok) { const e = new Error(data.error || 'Errore'); e.status = res.status; throw e; }
+        return data;
+    }
+
+    // ── FIRMA ──
+    const canvas = $('signature-canvas'), ctx = canvas.getContext('2d');
+    const sigBox = $('sig-box'), sigHint = $('sig-hint');
+    let isDrawing = false, hasDrawn = false, lastX = 0, lastY = 0;
+    function resizeCanvas() {
+        const ratio = Math.max(window.devicePixelRatio || 1, 1);
+        const rect = canvas.getBoundingClientRect();
+        if (!rect.width) return;
+        canvas.width = rect.width * ratio; canvas.height = rect.height * ratio;
+        ctx.setTransform(ratio, 0, 0, ratio, 0, 0);
+        ctx.lineCap = 'round'; ctx.lineJoin = 'round'; ctx.strokeStyle = '#0d47a1'; ctx.lineWidth = 2.6;
+    }
+    function coords(e) {
+        const r = canvas.getBoundingClientRect();
+        const t = e.touches ? e.touches[0] : e;
+        return { x: t.clientX - r.left, y: t.clientY - r.top };
+    }
+    function startDraw(e) {
+        e.preventDefault(); isDrawing = true;
+        const c = coords(e); lastX = c.x; lastY = c.y;
+        if (!hasDrawn) { hasDrawn = true; sigHint.style.display = 'none'; sigBox.classList.add('has-signature'); }
+    }
+    function draw(e) {
+        if (!isDrawing) return; e.preventDefault();
+        const c = coords(e);
+        ctx.beginPath(); ctx.moveTo(lastX, lastY); ctx.lineTo(c.x, c.y); ctx.stroke();
+        lastX = c.x; lastY = c.y;
+    }
+    function endDraw() { isDrawing = false; }
+    canvas.addEventListener('touchstart', startDraw, { passive: false });
+    canvas.addEventListener('touchmove', draw, { passive: false });
+    canvas.addEventListener('touchend', endDraw);
+    canvas.addEventListener('touchcancel', endDraw);
+    canvas.addEventListener('mousedown', startDraw);
+    canvas.addEventListener('mousemove', draw);
+    window.addEventListener('mouseup', endDraw);
+    window.addEventListener('resize', resizeCanvas);
+    function clearSignature() {
+        ctx.save(); ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.clearRect(0, 0, canvas.width, canvas.height); ctx.restore();
+        hasDrawn = false; sigHint.style.display = 'flex'; sigBox.classList.remove('has-signature');
+    }
+    $('btn-clear-sig').addEventListener('click', (e) => { e.preventDefault(); clearSignature(); });
+
+    // ── TOGGLE SI/NO ──
+    function setupToggles(parent) {
+        parent.querySelectorAll('.q-card').forEach(card => {
+            const no = card.querySelector('.btn-toggle.no'), yes = card.querySelector('.btn-toggle.yes');
+            if (!no || !yes) return;
+            if (card.dataset.bound) return;
+            card.dataset.bound = '1';
+            no.addEventListener('click', (e) => {
+                e.preventDefault(); no.classList.add('active'); yes.classList.remove('active'); card.classList.remove('is-yes');
+                if (card.id === 'card-crit-anestetico') $('group-anestetico-spec').style.display = 'none';
+                if (card.id === 'card-crit-farmaci') $('group-farmaci-spec').style.display = 'none';
+            });
+            yes.addEventListener('click', (e) => {
+                e.preventDefault(); yes.classList.add('active'); no.classList.remove('active'); card.classList.add('is-yes');
+                if (card.id === 'card-crit-anestetico') { $('group-anestetico-spec').style.display = 'block'; $('anestetico-specifica').focus(); }
+                if (card.id === 'card-crit-farmaci') { $('group-farmaci-spec').style.display = 'block'; $('farmaci-specifica').focus(); }
+            });
+        });
+    }
+    setupToggles(document.querySelector('.critical'));
+    setupToggles($('allergie-static-holder'));
+
+    // Stesse categorie (per ID) usate dal gestionale e dal PDF anamnesi
+    const CATEGORIE = [
+        { key: 'condizioni', titolo: 'Condizioni Generali', icona: 'fa-notes-medical', test: id => id >= 1 && id <= 8 },
+        { key: 'farmaci',    titolo: 'Farmaci in Uso / Terapie', icona: 'fa-pills', test: id => id >= 9 && id <= 17 },
+        { key: 'allergie',   titolo: 'Allergie e Intolleranze', icona: 'fa-hand-dots', test: id => (id >= 18 && id <= 21) || (id >= 41 && id <= 47) },
+        { key: 'vaccini',    titolo: 'Vaccinazioni Effettuate', icona: 'fa-syringe', test: id => id >= 22 && id <= 34 },
+        { key: 'abitudini',  titolo: 'Abitudini e Stile di Vita', icona: 'fa-person-walking', test: id => id >= 35 && id <= 39 }
+    ];
+    function renderQuestions(questions) {
+        const box = $('dynamic-questions-container');
+        const holder = $('allergie-static-holder');
+        // rimette al sicuro le domande statiche sulle allergie prima di svuotare le sezioni
+        ['card-crit-anestetico', 'group-anestetico-spec', 'card-crit-farmaci', 'group-farmaci-spec', 'card-crit-lattice']
+            .forEach(id => holder.appendChild($(id)));
+        box.innerHTML = '';
+        const gruppi = {};
+        CATEGORIE.forEach(c => gruppi[c.key] = []);
+        (questions || []).forEach(q => {
+            const cat = CATEGORIE.find(c => c.test(q.ID)) || CATEGORIE[0];
+            gruppi[cat.key].push(q);
+        });
+        CATEGORIE.forEach(c => {
+            const lista = gruppi[c.key];
+            if (!lista.length && c.key !== 'allergie') return;
+            const sec = document.createElement('div');
+            sec.className = 'section-card' + (c.key === 'allergie' ? ' critical' : '');
+            const titolo = document.createElement('div');
+            titolo.className = 'section-title';
+            titolo.innerHTML = '<i class="fa-solid ' + c.icona + '"></i> ';
+            titolo.appendChild(document.createTextNode(c.titolo));
+            sec.appendChild(titolo);
+            if (c.key === 'allergie') {
+                ['card-crit-anestetico', 'group-anestetico-spec', 'card-crit-farmaci', 'group-farmaci-spec', 'card-crit-lattice']
+                    .forEach(id => sec.appendChild($(id)));
+            }
+            lista.forEach(q => {
+                const card = document.createElement('div');
+                card.className = 'q-card'; card.dataset.id = q.ID;
+                const label = document.createElement('div');
+                label.className = 'q-label'; label.textContent = q.Descrizione || '';
+                const wrap = document.createElement('div');
+                wrap.className = 'q-toggle-wrap';
+                wrap.innerHTML = '<button type="button" class="btn-toggle no active" data-val="no">NO</button><button type="button" class="btn-toggle yes" data-val="yes">SÌ</button>';
+                card.appendChild(label); card.appendChild(wrap);
+                sec.appendChild(card);
+            });
+            box.appendChild(sec);
+            setupToggles(sec);
+        });
+    }
+
+    // ── DATA DI NASCITA: tre schermate separate (giorno -> mese -> anno) ──
+    const MESI = ['Gennaio', 'Febbraio', 'Marzo', 'Aprile', 'Maggio', 'Giugno', 'Luglio', 'Agosto', 'Settembre', 'Ottobre', 'Novembre', 'Dicembre'];
+    const dob = { step: 1, d: 0, m: 0, y: 0, decade: 1980 };
+    function giorniNelMese(m, y) { return new Date(y || 2000, m, 0).getDate(); }   // m = 1..12; senza anno vale come anno bisestile
+    function dobErr(msg) { const e = $('dob-err'); e.textContent = msg || ''; e.className = 'form-alert dob-err' + (msg ? ' error' : ''); }
+    function dobChiudi() { $('dob-overlay').style.display = 'none'; }
+    function dobApri() {
+        const v = $('f-nascita').value;
+        if (v) { const [y, m, d] = v.split('-').map(Number); Object.assign(dob, { d, m, y, decade: Math.floor(y / 10) * 10 }); }
+        else Object.assign(dob, { d: 0, m: 0, y: 0, decade: 1980 });
+        $('dob-overlay').style.display = 'flex';
+        dobMostra(1);
+    }
+    function dobMostra(step) {
+        dob.step = step; dobErr('');
+        const c = $('dob-content'); c.innerHTML = '';
+        $('dob-back').disabled = step === 1;
+        const titoli = ['', 'In che giorno è nato/a?', 'In che mese è nato/a?', 'In che anno è nato/a?'];
+        $('dob-title').textContent = titoli[step];
+        $('dob-sub').textContent = [dob.d ? dob.d : '', dob.m ? MESI[dob.m - 1] : '', dob.y || ''].filter((x, i) => i < step - 1 && x).join(' ');
+        const cella = (testo, sel, onClick) => {
+            const b = document.createElement('button');
+            b.type = 'button'; b.className = 'dob-cell' + (sel ? ' sel' : ''); b.textContent = testo;
+            b.addEventListener('click', onClick); return b;
+        };
+        const grid = document.createElement('div');
+        if (step === 1) {
+            grid.className = 'dob-grid g-days';
+            for (let d = 1; d <= 31; d++) grid.appendChild(cella(d, dob.d === d, () => { dob.d = d; dobMostra(2); }));
+        } else if (step === 2) {
+            grid.className = 'dob-grid g-months';
+            MESI.forEach((nome, i) => grid.appendChild(cella(nome, dob.m === i + 1, () => {
+                if (dob.d > giorniNelMese(i + 1, 0)) { dob.m = 0; dobMostra(1); return dobErr(nome + ' non ha ' + dob.d + ' giorni: scelga di nuovo il giorno.'); }
+                dob.m = i + 1; dobMostra(3);
+            })));
+        } else {
+            const anno = new Date().getFullYear();
+            const decs = document.createElement('div'); decs.className = 'dob-decades';
+            for (let dc = Math.floor(anno / 10) * 10; dc >= 1920; dc -= 10) {
+                const b = document.createElement('button');
+                b.type = 'button'; b.className = 'dob-dec' + (dc === dob.decade ? ' sel' : ''); b.textContent = dc + ' – ' + (dc + 9);
+                b.addEventListener('click', () => { dob.decade = dc; dobMostra(3); });
+                decs.appendChild(b);
+            }
+            c.appendChild(decs);
+            grid.className = 'dob-grid g-years';
+            for (let y = dob.decade; y < dob.decade + 10 && y <= anno; y++) grid.appendChild(cella(y, dob.y === y, () => dobConferma(y)));
+        }
+        c.appendChild(grid);
+    }
+    function dobConferma(y) {
+        if (dob.d > giorniNelMese(dob.m, y)) { dob.y = 0; dob.m = 0; dobMostra(1); return dobErr('Quella data non esiste: scelga di nuovo il giorno.'); }
+        const iso = y + '-' + String(dob.m).padStart(2, '0') + '-' + String(dob.d).padStart(2, '0');
+        if (new Date(iso + 'T00:00:00') > new Date()) { dobMostra(3); return dobErr('La data non può essere nel futuro.'); }
+        dob.y = y;
+        $('f-nascita').value = iso;
+        const b = $('btn-nascita');
+        b.textContent = dob.d + ' ' + MESI[dob.m - 1] + ' ' + y; b.classList.add('has-value');
+        dobChiudi();
+        $('f-nascita').dispatchEvent(new Event('change'));
+    }
+    $('btn-nascita').addEventListener('click', dobApri);
+    $('dob-close').addEventListener('click', dobChiudi);
+    $('dob-back').addEventListener('click', () => { if (dob.step > 1) dobMostra(dob.step - 1); });
+
+    // ── AUTOCOMPLETE (luogo di nascita, città di residenza) ──
+    function attachAutocomplete(input, list, urlFor, onPick, onType) {
+        let timer = null;
+        input.addEventListener('input', () => {
+            if (onType) onType();
+            clearTimeout(timer);
+            const q = input.value.trim();
+            if (q.length < 2) { list.style.display = 'none'; return; }
+            timer = setTimeout(async () => {
+                try {
+                    const res = await api(urlFor() + encodeURIComponent(q));
+                    list.innerHTML = '';
+                    res.forEach(c => {
+                        const b = document.createElement('button');
+                        b.type = 'button'; b.className = 'ac-item';
+                        b.textContent = c.denominazione + (c.provincia ? ' (' + c.provincia + ')' : '');
+                        b.addEventListener('click', () => { input.value = c.denominazione; list.style.display = 'none'; onPick(c); });
+                        list.appendChild(b);
+                    });
+                    list.style.display = res.length ? 'block' : 'none';
+                } catch (_) {}
+            }, 250);
+        });
+        document.addEventListener('click', (e) => { if (!list.contains(e.target) && e.target !== input) list.style.display = 'none'; });
+    }
+
+    let belfiore = '';
+    const luogo = $('f-luogo'), acList = $('ac-luogo');
+    function aggiornaLabelLuogo() {
+        $('lbl-luogo').innerHTML = ($('f-estero').checked ? 'Stato di nascita' : 'Comune di nascita') + ' <span class="req">*</span>';
+        luogo.placeholder = $('f-estero').checked ? "Digiti le prime lettere dello Stato e scelga dall'elenco" : "Digiti le prime lettere e scelga dall'elenco";
+    }
+    $('f-estero').addEventListener('change', () => { luogo.value = ''; belfiore = ''; acList.style.display = 'none'; aggiornaLabelLuogo(); verificaCF(); });
+    attachAutocomplete(luogo, acList,
+        () => $('f-estero').checked ? BASE + '/paesi?search=' : BASE + '/comuni?search=',
+        (c) => { belfiore = c.codiceBelfiore; verificaCF(); },
+        () => { belfiore = ''; verificaCF(); });
+    // Città di residenza: scegliendola si compilano da soli provincia e CAP
+    attachAutocomplete($('f-citta'), $('ac-citta'), () => BASE + '/comuni?search=',
+        (c) => { $('f-provincia').value = (c.provincia || '').toUpperCase(); if (c.cap && !$('f-cap').value.trim()) $('f-cap').value = c.cap; });
+
+    // ── CODICE FISCALE: calcolato in automatico, modificabile, sempre verificato ──
+    let cfModificato = false;
+    const OMO = { L:'0', M:'1', N:'2', P:'3', Q:'4', R:'5', S:'6', T:'7', U:'8', V:'9' };
+    function normOmo(cf15) { return [...cf15].map((c, i) => ([6,7,9,10,12,13,14].includes(i) && OMO[c]) ? OMO[c] : c).join(''); }
+    let cfTimer = null;
+    function verificaCF() {
+        clearTimeout(cfTimer);
+        const st = $('cf-status'), note = $('cf-note');
+        st.className = 'cf-status'; st.textContent = ''; note.style.display = 'none';
+        cfTimer = setTimeout(async () => {
+            const completi = $('f-cognome').value.trim() && $('f-nome').value.trim() && $('f-sesso').value !== '' && $('f-nascita').value && belfiore;
+            if (!completi) {
+                if ($('f-cf').value.trim()) st.textContent = 'Compili cognome, nome, sesso, data e luogo di nascita per verificare il codice fiscale.';
+                return;
+            }
+            try {
+                const q = new URLSearchParams({ cognome: $('f-cognome').value.trim(), nome: $('f-nome').value.trim(), sesso: $('f-sesso').value, dataNascita: $('f-nascita').value, codiceBelfiore: belfiore });
+                const r = await api(BASE + '/cf?' + q.toString());
+                if (!cfModificato || !$('f-cf').value.trim()) {
+                    $('f-cf').value = r.codiceFiscale; cfModificato = false;
+                    st.className = 'cf-status ok'; st.textContent = '✓ Codice fiscale calcolato automaticamente';
+                    note.style.display = 'block';
+                    return;
+                }
+                const cf = $('f-cf').value.trim().toUpperCase();
+                if (cf.length < 16) { st.className = 'cf-status ko'; st.textContent = 'Il codice fiscale deve avere 16 caratteri.'; return; }
+                if (normOmo(cf.slice(0, 15)) === r.codiceFiscale.slice(0, 15)) {
+                    st.className = 'cf-status ok'; st.textContent = '✓ Codice fiscale coerente con i dati inseriti';
+                } else {
+                    st.className = 'cf-status ko'; st.textContent = '✗ Il codice fiscale non corrisponde ai dati inseriti: controlli cognome, nome, sesso, data e luogo di nascita, oppure verifichi il suo codice fiscale.';
+                }
+            } catch (_) { st.className = 'cf-status ko'; st.textContent = 'Impossibile verificare il codice fiscale.'; }
+        }, 300);
+    }
+    $('f-cf').addEventListener('input', () => { cfModificato = $('f-cf').value.trim() !== ''; verificaCF(); });
+    ['f-cognome', 'f-nome'].forEach(id => $(id).addEventListener('input', verificaCF));
+    $('f-sesso').addEventListener('change', verificaCF);
+    $('f-nascita').addEventListener('change', () => { aggiornaMinorenne(); verificaCF(); });
+
+    function calcolaEta(iso) {
+        const d = new Date(iso + 'T00:00:00'); const n = new Date();
+        let e = n.getFullYear() - d.getFullYear();
+        if (n.getMonth() < d.getMonth() || (n.getMonth() === d.getMonth() && n.getDate() < d.getDate())) e--;
+        return e;
+    }
+    function aggiornaMinorenne() {
+        const v = $('f-nascita').value;
+        $('group-genitore').style.display = (v && calcolaEta(v) < 18) ? 'block' : 'none';
+    }
+
+    // ── APERTURA / RESET FORM ──
+    function resetForm() {
+        $('tablet-form').reset();
+        belfiore = ''; cfModificato = false; aggiornaLabelLuogo();
+        $('f-nascita').value = ''; $('btn-nascita').textContent = 'Tocchi per scegliere la data'; $('btn-nascita').classList.remove('has-value'); dobChiudi();
+        aggiornaMinorenne();
+        $('cf-note').style.display = 'none';
+        $('cf-status').textContent = ''; $('cf-status').className = 'cf-status';
+        $('group-anestetico-spec').style.display = 'none';
+        $('group-farmaci-spec').style.display = 'none';
+        document.querySelectorAll('.q-card').forEach(c => {
+            c.classList.remove('is-yes');
+            c.querySelector('.btn-toggle.no')?.classList.add('active');
+            c.querySelector('.btn-toggle.yes')?.classList.remove('active');
+        });
+        $('tablet-error').className = 'form-alert';
+        clearSignature();
+    }
+    function openForm() {
+        resetForm();
+        renderQuestions(QUESTIONS);
+        show('view-form');
+        setTimeout(resizeCanvas, 100);
+    }
+
+    function errore(msg, el) {
+        const box = $('tablet-error'); box.textContent = msg; box.className = 'form-alert error';
+        (el || box).scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+
+    function esito(ok, titolo, testo) {
+        $('res-title').textContent = titolo; $('res-sub').textContent = testo;
+        resetForm();   // i dati non restano sullo schermo
+        show('view-success');
+    }
+
+    // ── INVIO ──
+    $('tablet-form').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        $('tablet-error').className = 'form-alert';
+        const v = (id) => $(id).value.trim();
+        if (!v('f-cognome') || !v('f-nome')) return errore('Inserisca cognome e nome.', $('f-cognome'));
+        if ($('f-sesso').value === '') return errore('Indichi il sesso.', $('f-sesso'));
+        if (!v('f-nascita')) return errore('Inserisca la data di nascita.', $('btn-nascita'));
+        if (!belfiore) return errore('Scelga il luogo di nascita dall\'elenco proposto.', luogo);
+        if (!v('f-cf')) return errore('Inserisca il codice fiscale.', $('f-cf'));
+        if ($('cf-status').classList.contains('ko')) return errore($('cf-status').textContent, $('f-cf'));
+        if (!v('f-cellulare')) return errore('Inserisca un numero di cellulare.', $('f-cellulare'));
+        const minorenne = calcolaEta(v('f-nascita')) < 18;
+        if (minorenne && !v('f-genitore')) return errore('Paziente minorenne: indichi nome e cognome del genitore o tutore.', $('f-genitore'));
+        if (!hasDrawn) return errore('Apponga la sua firma nel riquadro prima di salvare.', sigBox);
+        if (!$('privacy-consent').checked) return errore('È necessario accettare il consenso al trattamento dei dati.', $('privacy-consent'));
+
+        const answers = [];
+        $('dynamic-questions-container').querySelectorAll('.q-card[data-id]').forEach(card => {
+            const id = parseInt(card.dataset.id, 10);
+            if (id && card.querySelector('.btn-toggle.yes')?.classList.contains('active')) answers.push(id);
+        });
+        const yes = (sel) => document.querySelector(sel + ' .btn-toggle.yes')?.classList.contains('active') || false;
+        const allergiaAnestetico = yes('#card-crit-anestetico');
+        const allergiaFarmaci = yes('#card-crit-farmaci');
+        if (allergiaFarmaci && !v('farmaci-specifica')) return errore('Specifichi a quali farmaci è allergico/a.', $('farmaci-specifica'));
+
+        const btn = $('btn-submit');
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Invio in corso...';
+        try {
+            await api(BASE, {
+                method: 'POST',
+                body: JSON.stringify({
+                    anagrafica: {
+                        cognome: v('f-cognome'), nome: v('f-nome'), sesso: parseInt($('f-sesso').value, 10),
+                        dataNascita: v('f-nascita'), luogoNascita: v('f-luogo'), codiceBelfiore: belfiore,
+                        cf: v('f-cf').toUpperCase(), genitore: v('f-genitore'),
+                        indirizzo: v('f-indirizzo'), civico: v('f-civico'), cap: v('f-cap'),
+                        citta: v('f-citta'), provincia: v('f-provincia').toUpperCase(),
+                        cellulare: v('f-cellulare'), email: v('f-email')
+                    },
+                    answers,
+                    critici: {
+                        allergiaAnestetico,
+                        allergiaAnesteticoSpecifica: allergiaAnestetico ? v('anestetico-specifica') : '',
+                        allergiaFarmaci,
+                        allergiaFarmaciSpecifica: allergiaFarmaci ? v('farmaci-specifica') : '',
+                        allergiaLattice: yes('#card-crit-lattice'),
+                        portatorePacemaker: yes('#card-crit-pacemaker')
+                    },
+                    textFields: { farmaciPrescritti: v('farmaci-prescritti'), altreMalattie: v('altre-malattie') },
+                    firmaData: canvas.toDataURL('image/png'),
+                    consenso: true
+                })
+            });
+            esito(true, 'Registrazione inviata!', 'Grazie! I suoi dati e la firma sono stati inviati al Centro Dentale Corbo. Può chiudere questa pagina.');
+        } catch (err) {
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fa-solid fa-paper-plane"></i> Conferma e Invia';
+            errore(err.message);
+        }
+    });
+
+    aggiornaLabelLuogo();
+    openForm();
+})();
+</script>
+
+</body>
+</html>

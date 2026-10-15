@@ -1,0 +1,898 @@
+[
+  {
+    "denominazione": "AFGHANISTAN",
+    "codice_belfiore": "Z200"
+  },
+  {
+    "denominazione": "ALBANIA",
+    "codice_belfiore": "Z100"
+  },
+  {
+    "denominazione": "ALGERIA",
+    "codice_belfiore": "Z301"
+  },
+  {
+    "denominazione": "ANDORRA",
+    "codice_belfiore": "Z101"
+  },
+  {
+    "denominazione": "ANGOLA",
+    "codice_belfiore": "Z302"
+  },
+  {
+    "denominazione": "ANGUILLA (ISOLA)",
+    "codice_belfiore": "Z529"
+  },
+  {
+    "denominazione": "ANTIGUA E BARBUDA",
+    "codice_belfiore": "Z532"
+  },
+  {
+    "denominazione": "ANTILLE OLANDESI (SUDAMERICANE)",
+    "codice_belfiore": "Z501"
+  },
+  {
+    "denominazione": "ARABIA SAUDITA",
+    "codice_belfiore": "Z203"
+  },
+  {
+    "denominazione": "ARGENTINA",
+    "codice_belfiore": "Z600"
+  },
+  {
+    "denominazione": "ARMENIA",
+    "codice_belfiore": "Z252"
+  },
+  {
+    "denominazione": "AUSTRALIA",
+    "codice_belfiore": "Z700"
+  },
+  {
+    "denominazione": "AUSTRIA",
+    "codice_belfiore": "Z102"
+  },
+  {
+    "denominazione": "AZERBAIGIAN",
+    "codice_belfiore": "Z253"
+  },
+  {
+    "denominazione": "BAHAMA",
+    "codice_belfiore": "Z502"
+  },
+  {
+    "denominazione": "BAHREIN",
+    "codice_belfiore": "Z204"
+  },
+  {
+    "denominazione": "BANGLADESH",
+    "codice_belfiore": "Z249"
+  },
+  {
+    "denominazione": "BARBADOS",
+    "codice_belfiore": "Z522"
+  },
+  {
+    "denominazione": "BELGIO",
+    "codice_belfiore": "Z103"
+  },
+  {
+    "denominazione": "BELIZE",
+    "codice_belfiore": "Z512"
+  },
+  {
+    "denominazione": "BENIN",
+    "codice_belfiore": "Z314"
+  },
+  {
+    "denominazione": "BERMUDA (ISOLE)",
+    "codice_belfiore": "Z400"
+  },
+  {
+    "denominazione": "BHUTAN",
+    "codice_belfiore": "Z205"
+  },
+  {
+    "denominazione": "BIELORUSSIA=RUSSIA BIANCA",
+    "codice_belfiore": "Z139"
+  },
+  {
+    "denominazione": "BOLIVIA",
+    "codice_belfiore": "Z601"
+  },
+  {
+    "denominazione": "BOSNIA ED ERZEGOVINA",
+    "codice_belfiore": "Z153"
+  },
+  {
+    "denominazione": "BOTSWANA",
+    "codice_belfiore": "Z358"
+  },
+  {
+    "denominazione": "BRASILE",
+    "codice_belfiore": "Z602"
+  },
+  {
+    "denominazione": "BRUNEI",
+    "codice_belfiore": "Z207"
+  },
+  {
+    "denominazione": "BULGARIA",
+    "codice_belfiore": "Z104"
+  },
+  {
+    "denominazione": "BURKINA",
+    "codice_belfiore": "Z354"
+  },
+  {
+    "denominazione": "BURUNDI",
+    "codice_belfiore": "Z305"
+  },
+  {
+    "denominazione": "CAMBOGIA",
+    "codice_belfiore": "Z208"
+  },
+  {
+    "denominazione": "CAMERUN",
+    "codice_belfiore": "Z306"
+  },
+  {
+    "denominazione": "CANADA",
+    "codice_belfiore": "Z401"
+  },
+  {
+    "denominazione": "CAPO VERDE",
+    "codice_belfiore": "Z307"
+  },
+  {
+    "denominazione": "CAYMAN (ISOLE)",
+    "codice_belfiore": "Z530"
+  },
+  {
+    "denominazione": "CECA REPUBBLICA",
+    "codice_belfiore": "Z156"
+  },
+  {
+    "denominazione": "CENTRAFRICANA REPUBBLICA",
+    "codice_belfiore": "Z308"
+  },
+  {
+    "denominazione": "CHRISTMAS (ISOLA)",
+    "codice_belfiore": "Z702"
+  },
+  {
+    "denominazione": "CIAD",
+    "codice_belfiore": "Z309"
+  },
+  {
+    "denominazione": "CILE",
+    "codice_belfiore": "Z603"
+  },
+  {
+    "denominazione": "CINA REPUBBLICA POPOLARE",
+    "codice_belfiore": "Z210"
+  },
+  {
+    "denominazione": "CIPRO",
+    "codice_belfiore": "Z211"
+  },
+  {
+    "denominazione": "CITTA' DEL VATICANO",
+    "codice_belfiore": "Z106"
+  },
+  {
+    "denominazione": "COCOS (ISOLE)",
+    "codice_belfiore": "Z212"
+  },
+  {
+    "denominazione": "COLOMBIA",
+    "codice_belfiore": "Z604"
+  },
+  {
+    "denominazione": "COMORE",
+    "codice_belfiore": "Z310"
+  },
+  {
+    "denominazione": "CONGO REPUBBLICA DEMOCRATICA",
+    "codice_belfiore": "Z312"
+  },
+  {
+    "denominazione": "CONGO REPUBBLICA POPOLARE",
+    "codice_belfiore": "Z311"
+  },
+  {
+    "denominazione": "COOK (ISOLE)",
+    "codice_belfiore": "Z703"
+  },
+  {
+    "denominazione": "COREA DEL NORD",
+    "codice_belfiore": "Z214"
+  },
+  {
+    "denominazione": "COREA DEL SUD",
+    "codice_belfiore": "Z213"
+  },
+  {
+    "denominazione": "COSTA D'AVORIO",
+    "codice_belfiore": "Z313"
+  },
+  {
+    "denominazione": "COSTA RICA",
+    "codice_belfiore": "Z503"
+  },
+  {
+    "denominazione": "CROAZIA",
+    "codice_belfiore": "Z149"
+  },
+  {
+    "denominazione": "CUBA",
+    "codice_belfiore": "Z504"
+  },
+  {
+    "denominazione": "DANIMARCA",
+    "codice_belfiore": "Z107"
+  },
+  {
+    "denominazione": "DOMINICA (ISOLA)",
+    "codice_belfiore": "Z526"
+  },
+  {
+    "denominazione": "DOMINICANA REPUBBLICA",
+    "codice_belfiore": "Z505"
+  },
+  {
+    "denominazione": "ECUADOR",
+    "codice_belfiore": "Z605"
+  },
+  {
+    "denominazione": "EGITTO",
+    "codice_belfiore": "Z336"
+  },
+  {
+    "denominazione": "EL SALVADOR",
+    "codice_belfiore": "Z506"
+  },
+  {
+    "denominazione": "EMIRATI ARABI UNITI",
+    "codice_belfiore": "Z215"
+  },
+  {
+    "denominazione": "ERITREA",
+    "codice_belfiore": "Z368"
+  },
+  {
+    "denominazione": "ESTONIA",
+    "codice_belfiore": "Z144"
+  },
+  {
+    "denominazione": "ETIOPIA",
+    "codice_belfiore": "Z315"
+  },
+  {
+    "denominazione": "FAER OER (ISOLE)",
+    "codice_belfiore": "Z108"
+  },
+  {
+    "denominazione": "FIGI=VITI (ISOLE)",
+    "codice_belfiore": "Z704"
+  },
+  {
+    "denominazione": "FILIPPINE",
+    "codice_belfiore": "Z216"
+  },
+  {
+    "denominazione": "FINLANDIA",
+    "codice_belfiore": "Z109"
+  },
+  {
+    "denominazione": "FRANCIA",
+    "codice_belfiore": "Z110"
+  },
+  {
+    "denominazione": "GABON",
+    "codice_belfiore": "Z316"
+  },
+  {
+    "denominazione": "GAMBIA",
+    "codice_belfiore": "Z317"
+  },
+  {
+    "denominazione": "GEORGIA",
+    "codice_belfiore": "Z254"
+  },
+  {
+    "denominazione": "GERMANIA",
+    "codice_belfiore": "Z112"
+  },
+  {
+    "denominazione": "GHANA",
+    "codice_belfiore": "Z318"
+  },
+  {
+    "denominazione": "GIAMAICA",
+    "codice_belfiore": "Z507"
+  },
+  {
+    "denominazione": "GIAPPONE",
+    "codice_belfiore": "Z219"
+  },
+  {
+    "denominazione": "GIBILTERRA",
+    "codice_belfiore": "Z113"
+  },
+  {
+    "denominazione": "GIBUTI",
+    "codice_belfiore": "Z361"
+  },
+  {
+    "denominazione": "GIORDANIA",
+    "codice_belfiore": "Z220"
+  },
+  {
+    "denominazione": "GR. BRET. - IRLANDA DEL NORD (REGNO UNITO)",
+    "codice_belfiore": "Z114"
+  },
+  {
+    "denominazione": "GRECIA",
+    "codice_belfiore": "Z115"
+  },
+  {
+    "denominazione": "GRENADA",
+    "codice_belfiore": "Z524"
+  },
+  {
+    "denominazione": "GROENLANDIA",
+    "codice_belfiore": "Z402"
+  },
+  {
+    "denominazione": "GUADALUPA",
+    "codice_belfiore": "Z508"
+  },
+  {
+    "denominazione": "GUAM (ISOLA)",
+    "codice_belfiore": "Z706"
+  },
+  {
+    "denominazione": "GUATEMALA",
+    "codice_belfiore": "Z509"
+  },
+  {
+    "denominazione": "GUAYANA=GUIANA FRANCESE",
+    "codice_belfiore": "Z607"
+  },
+  {
+    "denominazione": "GUINEA BISSAU",
+    "codice_belfiore": "Z320"
+  },
+  {
+    "denominazione": "GUINEA EQUATORIALE",
+    "codice_belfiore": "Z321"
+  },
+  {
+    "denominazione": "GUINEA REPUBBLICA POPOLARE",
+    "codice_belfiore": "Z319"
+  },
+  {
+    "denominazione": "GUYANA",
+    "codice_belfiore": "Z606"
+  },
+  {
+    "denominazione": "HAITI",
+    "codice_belfiore": "Z510"
+  },
+  {
+    "denominazione": "HONDURAS",
+    "codice_belfiore": "Z511"
+  },
+  {
+    "denominazione": "HONG KONG",
+    "codice_belfiore": "Z221"
+  },
+  {
+    "denominazione": "INDIA",
+    "codice_belfiore": "Z222"
+  },
+  {
+    "denominazione": "INDONESIA",
+    "codice_belfiore": "Z223"
+  },
+  {
+    "denominazione": "IRAN",
+    "codice_belfiore": "Z224"
+  },
+  {
+    "denominazione": "IRAQ",
+    "codice_belfiore": "Z225"
+  },
+  {
+    "denominazione": "IRLANDA",
+    "codice_belfiore": "Z116"
+  },
+  {
+    "denominazione": "ISLANDA",
+    "codice_belfiore": "Z117"
+  },
+  {
+    "denominazione": "ISOLE VERGINI AMERICANE",
+    "codice_belfiore": "Z520"
+  },
+  {
+    "denominazione": "ISOLE VERGINI BRITANNICHE",
+    "codice_belfiore": "Z525"
+  },
+  {
+    "denominazione": "ISRAELE",
+    "codice_belfiore": "Z226"
+  },
+  {
+    "denominazione": "IUGOSLAVIA",
+    "codice_belfiore": "Z118"
+  },
+  {
+    "denominazione": "KAZAKISTAN",
+    "codice_belfiore": "Z255"
+  },
+  {
+    "denominazione": "KENYA",
+    "codice_belfiore": "Z322"
+  },
+  {
+    "denominazione": "KIRGHIZISTAN",
+    "codice_belfiore": "Z256"
+  },
+  {
+    "denominazione": "KIRIBATI",
+    "codice_belfiore": "Z731"
+  },
+  {
+    "denominazione": "KUWAIT",
+    "codice_belfiore": "Z227"
+  },
+  {
+    "denominazione": "LAOS",
+    "codice_belfiore": "Z228"
+  },
+  {
+    "denominazione": "LESOTHO",
+    "codice_belfiore": "Z359"
+  },
+  {
+    "denominazione": "LETTONIA",
+    "codice_belfiore": "Z145"
+  },
+  {
+    "denominazione": "LIBANO",
+    "codice_belfiore": "Z229"
+  },
+  {
+    "denominazione": "LIBERIA",
+    "codice_belfiore": "Z325"
+  },
+  {
+    "denominazione": "LIBIA",
+    "codice_belfiore": "Z326"
+  },
+  {
+    "denominazione": "LIECHTENSTEIN",
+    "codice_belfiore": "Z119"
+  },
+  {
+    "denominazione": "LITUANIA",
+    "codice_belfiore": "Z146"
+  },
+  {
+    "denominazione": "LUSSEMBURGO",
+    "codice_belfiore": "Z120"
+  },
+  {
+    "denominazione": "MACAO",
+    "codice_belfiore": "Z231"
+  },
+  {
+    "denominazione": "MACEDONIA",
+    "codice_belfiore": "Z148"
+  },
+  {
+    "denominazione": "MADAGASCAR",
+    "codice_belfiore": "Z327"
+  },
+  {
+    "denominazione": "MALAWI",
+    "codice_belfiore": "Z328"
+  },
+  {
+    "denominazione": "MALDIVE",
+    "codice_belfiore": "Z232"
+  },
+  {
+    "denominazione": "MALI",
+    "codice_belfiore": "Z329"
+  },
+  {
+    "denominazione": "MALTA",
+    "codice_belfiore": "Z121"
+  },
+  {
+    "denominazione": "MARIANNE (ISOLE) (SETTENTRIONALI?)",
+    "codice_belfiore": "Z710"
+  },
+  {
+    "denominazione": "MAROCCO",
+    "codice_belfiore": "Z330"
+  },
+  {
+    "denominazione": "MARSHALL (ISOLE)",
+    "codice_belfiore": "Z711"
+  },
+  {
+    "denominazione": "MARTINICA",
+    "codice_belfiore": "Z513"
+  },
+  {
+    "denominazione": "MAURITANIA",
+    "codice_belfiore": "Z331"
+  },
+  {
+    "denominazione": "MAURIZIO (ISOLE)",
+    "codice_belfiore": "Z332"
+  },
+  {
+    "denominazione": "MAYOTTE",
+    "codice_belfiore": "Z360"
+  },
+  {
+    "denominazione": "MESSICO",
+    "codice_belfiore": "Z514"
+  },
+  {
+    "denominazione": "MICRONESIA STATI FEDERATI",
+    "codice_belfiore": "Z735"
+  },
+  {
+    "denominazione": "MOLDAVIA",
+    "codice_belfiore": "Z140"
+  },
+  {
+    "denominazione": "MONACO",
+    "codice_belfiore": "Z123"
+  },
+  {
+    "denominazione": "MONGOLIA",
+    "codice_belfiore": "Z233"
+  },
+  {
+    "denominazione": "MONTSERRAT (ISOLA)",
+    "codice_belfiore": "Z531"
+  },
+  {
+    "denominazione": "MOZAMBICO",
+    "codice_belfiore": "Z333"
+  },
+  {
+    "denominazione": "MYANMAR = BIRMANIA",
+    "codice_belfiore": "Z206"
+  },
+  {
+    "denominazione": "NAMIBIA",
+    "codice_belfiore": "Z300"
+  },
+  {
+    "denominazione": "NAURU",
+    "codice_belfiore": "Z713"
+  },
+  {
+    "denominazione": "NEPAL",
+    "codice_belfiore": "Z234"
+  },
+  {
+    "denominazione": "NICARAGUA",
+    "codice_belfiore": "Z515"
+  },
+  {
+    "denominazione": "NIGER",
+    "codice_belfiore": "Z334"
+  },
+  {
+    "denominazione": "NIGERIA",
+    "codice_belfiore": "Z335"
+  },
+  {
+    "denominazione": "NIUE (ATOLLO)",
+    "codice_belfiore": "Z714"
+  },
+  {
+    "denominazione": "NORFOLK (ISOLE)",
+    "codice_belfiore": "Z715"
+  },
+  {
+    "denominazione": "NORVEGIA",
+    "codice_belfiore": "Z125"
+  },
+  {
+    "denominazione": "NUOVA CALEDONIA (ISOLE E DIPENDENZE)",
+    "codice_belfiore": "Z716"
+  },
+  {
+    "denominazione": "NUOVA ZELANDA",
+    "codice_belfiore": "Z719"
+  },
+  {
+    "denominazione": "OMAN",
+    "codice_belfiore": "Z235"
+  },
+  {
+    "denominazione": "PAESI BASSI",
+    "codice_belfiore": "Z126"
+  },
+  {
+    "denominazione": "PAKISTAN",
+    "codice_belfiore": "Z236"
+  },
+  {
+    "denominazione": "PALAU REPUBBLICA",
+    "codice_belfiore": "Z734"
+  },
+  {
+    "denominazione": "PANAMA'",
+    "codice_belfiore": "Z516"
+  },
+  {
+    "denominazione": "PAPUA NUOVA GUINEA",
+    "codice_belfiore": "Z730"
+  },
+  {
+    "denominazione": "PARAGUAY",
+    "codice_belfiore": "Z610"
+  },
+  {
+    "denominazione": "PERU'",
+    "codice_belfiore": "Z611"
+  },
+  {
+    "denominazione": "PITCAIRN (E DIPENDENZE)",
+    "codice_belfiore": "Z722"
+  },
+  {
+    "denominazione": "POLINESIA FRANCESE (ISOLE)",
+    "codice_belfiore": "Z723"
+  },
+  {
+    "denominazione": "POLONIA",
+    "codice_belfiore": "Z127"
+  },
+  {
+    "denominazione": "PORTOGALLO",
+    "codice_belfiore": "Z128"
+  },
+  {
+    "denominazione": "PUERTO RICO (STATO LIBERO ASSOCIATO)",
+    "codice_belfiore": "Z518"
+  },
+  {
+    "denominazione": "QATAR",
+    "codice_belfiore": "Z237"
+  },
+  {
+    "denominazione": "ROMANIA",
+    "codice_belfiore": "Z129"
+  },
+  {
+    "denominazione": "RUANDA",
+    "codice_belfiore": "Z338"
+  },
+  {
+    "denominazione": "RUSSIA=FEDERAZIONE RUSSA",
+    "codice_belfiore": "Z154"
+  },
+  {
+    "denominazione": "SAINT KITTS E NEVIS=S. CHRISTOPHER E NEVIS",
+    "codice_belfiore": "Z533"
+  },
+  {
+    "denominazione": "SAINT LUCIA",
+    "codice_belfiore": "Z527"
+  },
+  {
+    "denominazione": "SAINT PIERRE ET MIQUELON (ISOLE)",
+    "codice_belfiore": "Z403"
+  },
+  {
+    "denominazione": "SAINT VINCENT E GRENADINE",
+    "codice_belfiore": "Z528"
+  },
+  {
+    "denominazione": "SALOMONE",
+    "codice_belfiore": "Z724"
+  },
+  {
+    "denominazione": "SAMOA",
+    "codice_belfiore": "Z726"
+  },
+  {
+    "denominazione": "SAMOA SWAIN (AMERICANE)",
+    "codice_belfiore": "Z725"
+  },
+  {
+    "denominazione": "SAN MARINO",
+    "codice_belfiore": "Z130"
+  },
+  {
+    "denominazione": "SANT’ELENA",
+    "codice_belfiore": "Z340"
+  },
+  {
+    "denominazione": "SAO TOME' E PRINCIPE (ISOLE)",
+    "codice_belfiore": "Z341"
+  },
+  {
+    "denominazione": "SEICELLE (ISOLE)",
+    "codice_belfiore": "Z342"
+  },
+  {
+    "denominazione": "SENEGAL",
+    "codice_belfiore": "Z343"
+  },
+  {
+    "denominazione": "SIERRA LEONE",
+    "codice_belfiore": "Z344"
+  },
+  {
+    "denominazione": "SINGAPORE",
+    "codice_belfiore": "Z248"
+  },
+  {
+    "denominazione": "SIRIA",
+    "codice_belfiore": "Z240"
+  },
+  {
+    "denominazione": "SLOVACCA REPUBBLICA",
+    "codice_belfiore": "Z155"
+  },
+  {
+    "denominazione": "SLOVENIA",
+    "codice_belfiore": "Z150"
+  },
+  {
+    "denominazione": "SOMALIA",
+    "codice_belfiore": "Z345"
+  },
+  {
+    "denominazione": "SPAGNA",
+    "codice_belfiore": "Z131"
+  },
+  {
+    "denominazione": "SRI LANKA",
+    "codice_belfiore": "Z209"
+  },
+  {
+    "denominazione": "STATI UNITI D'AMERICA",
+    "codice_belfiore": "Z404"
+  },
+  {
+    "denominazione": "SUDAFRICANA REPUBBLICA",
+    "codice_belfiore": "Z347"
+  },
+  {
+    "denominazione": "SUDAN",
+    "codice_belfiore": "Z348"
+  },
+  {
+    "denominazione": "SURINAME",
+    "codice_belfiore": "Z608"
+  },
+  {
+    "denominazione": "SVEZIA",
+    "codice_belfiore": "Z132"
+  },
+  {
+    "denominazione": "SVIZZERA",
+    "codice_belfiore": "Z133"
+  },
+  {
+    "denominazione": "SWAZILAND",
+    "codice_belfiore": "Z349"
+  },
+  {
+    "denominazione": "TAGIKISTAN",
+    "codice_belfiore": "Z257"
+  },
+  {
+    "denominazione": "TAIWAN = FORMOSA",
+    "codice_belfiore": "Z217"
+  },
+  {
+    "denominazione": "TANZANIA",
+    "codice_belfiore": "Z357"
+  },
+  {
+    "denominazione": "THAILANDIA",
+    "codice_belfiore": "Z241"
+  },
+  {
+    "denominazione": "TIMOR (ISOLA) - ORIENTALE",
+    "codice_belfiore": "Z242"
+  },
+  {
+    "denominazione": "TOGO",
+    "codice_belfiore": "Z351"
+  },
+  {
+    "denominazione": "TOKELAU (ISOLE)",
+    "codice_belfiore": "Z727"
+  },
+  {
+    "denominazione": "TONGA",
+    "codice_belfiore": "Z728"
+  },
+  {
+    "denominazione": "TRINIDAD E TOBAGO",
+    "codice_belfiore": "Z612"
+  },
+  {
+    "denominazione": "TUNISIA",
+    "codice_belfiore": "Z352"
+  },
+  {
+    "denominazione": "TURCHIA",
+    "codice_belfiore": "Z243"
+  },
+  {
+    "denominazione": "TURKEMENISTAN",
+    "codice_belfiore": "Z258"
+  },
+  {
+    "denominazione": "TURKS E CAICOS (ISOLE)",
+    "codice_belfiore": "Z519"
+  },
+  {
+    "denominazione": "TUVALU",
+    "codice_belfiore": "Z732"
+  },
+  {
+    "denominazione": "UCRAINA",
+    "codice_belfiore": "Z138"
+  },
+  {
+    "denominazione": "UGANDA",
+    "codice_belfiore": "Z353"
+  },
+  {
+    "denominazione": "UNGHERIA",
+    "codice_belfiore": "Z134"
+  },
+  {
+    "denominazione": "URUGUAY",
+    "codice_belfiore": "Z613"
+  },
+  {
+    "denominazione": "UZBEKISTAN",
+    "codice_belfiore": "Z259"
+  },
+  {
+    "denominazione": "VANUATU",
+    "codice_belfiore": "Z733"
+  },
+  {
+    "denominazione": "VENEZUELA",
+    "codice_belfiore": "Z614"
+  },
+  {
+    "denominazione": "VIETNAM",
+    "codice_belfiore": "Z251"
+  },
+  {
+    "denominazione": "WALLIS E FUTUNA (ISOLE)",
+    "codice_belfiore": "Z729"
+  },
+  {
+    "denominazione": "YEMEN",
+    "codice_belfiore": "Z246"
+  },
+  {
+    "denominazione": "ZAMBIA",
+    "codice_belfiore": "Z355"
+  },
+  {
+    "denominazione": "ZIMBABWE",
+    "codice_belfiore": "Z337"
+  }
+]

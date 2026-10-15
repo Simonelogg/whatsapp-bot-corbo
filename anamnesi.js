@@ -5,6 +5,29 @@
 const fs = require('fs');
 const path = require('path');
 const crypto = require('crypto');
+const { calcolaCodiceFiscale, validaCF } = require('./cf');
+
+// Anagrafiche per la registrazione da smartphone (stessi dati del gestionale):
+// comuni {d: nome, p: provincia, b: codice Belfiore, c: CAP} e stati esteri.
+let COMUNI = [], PAESI = [];
+try { COMUNI = JSON.parse(fs.readFileSync(path.join(__dirname, 'comuni.json'), 'utf8')); } catch (e) { console.warn('⚠️ comuni.json non caricato:', e.message); }
+try { PAESI = JSON.parse(fs.readFileSync(path.join(__dirname, 'paesi_esteri.json'), 'utf8')); } catch (e) { console.warn('⚠️ paesi_esteri.json non caricato:', e.message); }
+
+const REGISTRAZIONE_VALIDITA_MS = 10 * 60 * 1000;       // un link di registrazione va APERTO entro 10 minuti dalla creazione
+const REGISTRAZIONE_TOLLERANZA_MS = 30 * 60 * 1000;    // chi lo ha aperto in tempo ha 30 minuti per finire la compilazione
+const REGISTRAZIONE_HTML = path.join(__dirname, 'registrazione.html');
+
+function cercaPerPrefisso(lista, q, nomeKey) {
+    const qq = (q || '').trim().toLowerCase();
+    if (qq.length < 2) return [];
+    return lista.filter(x => x[nomeKey].toLowerCase().startsWith(qq))
+        .sort((a, b) => {
+            const an = a[nomeKey].toLowerCase(), bn = b[nomeKey].toLowerCase();
+            if ((an === qq) !== (bn === qq)) return an === qq ? -1 : 1;
+            if (an.length !== bn.length) return an.length - bn.length;
+            return an.localeCompare(bn);
+        }).slice(0, 15);
+}
 
 function setupAnamnesiRoutes(app, { DATA_DIR, POLL_SECRET }) {
     const ANAMNESI_FILE = path.join(DATA_DIR, 'anamnesi.json');
@@ -51,6 +74,7 @@ function setupAnamnesiRoutes(app, { DATA_DIR, POLL_SECRET }) {
 
         const {
             token: customToken,
+            tipo,
             idContatto,
             nome,
             cognome,
@@ -64,16 +88,19 @@ function setupAnamnesiRoutes(app, { DATA_DIR, POLL_SECRET }) {
             note
         } = req.body;
 
-        if (!nome || !cognome) {
+        const isRegistrazione = tipo === 'registrazione';
+        if (!isRegistrazione && (!nome || !cognome)) {
             return res.status(400).json({ error: 'Nome e cognome obbligatori' });
         }
 
         const token = customToken || crypto.randomBytes(20).toString('hex');
         const session = {
             token,
+            tipo: isRegistrazione ? 'registrazione' : 'anamnesi',
+            expiresAt: isRegistrazione ? new Date(Date.now() + REGISTRAZIONE_VALIDITA_MS).toISOString() : null,
             idContatto: idContatto || null,
-            nome: nome.trim(),
-            cognome: cognome.trim(),
+            nome: (nome || '').trim(),
+            cognome: (cognome || '').trim(),
             dataNascita: dataNascita || null,
             codiceFiscale: (codiceFiscale || '').trim().toUpperCase(),
             telefono: (telefono || '').trim(),
@@ -88,6 +115,14 @@ function setupAnamnesiRoutes(app, { DATA_DIR, POLL_SECRET }) {
             acknowledged: false,
             datiCompilati: null
         };
+
+        // Pulizia: i link di registrazione scaduti e mai completati non servono piu'
+        const ora = Date.now();
+        Object.keys(sessions).forEach(k => {
+            const x = sessions[k];
+            if (x.tipo === 'registrazione' && x.status === 'pending' && !sessioneRegistrazioneAperta(k)
+                && ora > new Date(x.expiresAt).getTime() + REGISTRAZIONE_TOLLERANZA_MS) delete sessions[k];
+        });
 
         sessions[token] = session;
         saveAnamnesiState();
@@ -125,6 +160,9 @@ function setupAnamnesiRoutes(app, { DATA_DIR, POLL_SECRET }) {
         tokens.forEach(tok => {
             if (sessions[tok]) {
                 sessions[tok].acknowledged = true;
+                // Registrazione da smartphone: i dati personali e sanitari sono ormai nel gestionale
+                // dello studio, non devono restare su questo server (privacy/GDPR).
+                if (sessions[tok].tipo === 'registrazione') { delete sessions[tok]; ackCount++; return; }
                 ackCount++;
             }
         });
@@ -136,14 +174,53 @@ function setupAnamnesiRoutes(app, { DATA_DIR, POLL_SECRET }) {
     // ─────────────────────────────────────────────────────────────────────────────
     // 4. ENDPOINT PUBBLICO: Visualizza la pagina web di anamnesi per il paziente
     // ─────────────────────────────────────────────────────────────────────────────
+    // Ricerche di supporto al modulo di registrazione (comuni, stati esteri, calcolo CF):
+    // valide solo con un link di registrazione ancora aperto.
+    function sessioneRegistrazioneAperta(token) {
+        const s = sessions[token];
+        if (!s || s.tipo !== 'registrazione' || s.status !== 'pending') return null;
+        const adesso = Date.now();
+        if (s.expiresAt && new Date(s.expiresAt).getTime() >= adesso) return s;            // ancora nei 10 minuti
+        if (s.openedAt && adesso <= new Date(s.openedAt).getTime() + REGISTRAZIONE_TOLLERANZA_MS) return s; // aperto in tempo: puo' finire
+        return null;
+    }
+    app.get('/anamnesi/:token/comuni', (req, res) => {
+        if (!sessioneRegistrazioneAperta(req.params.token)) return res.status(404).json({ error: 'Link non valido o scaduto' });
+        res.json(cercaPerPrefisso(COMUNI, req.query.search, 'd').map(c => ({ denominazione: c.d, provincia: c.p, codiceBelfiore: c.b, cap: c.c })));
+    });
+    app.get('/anamnesi/:token/paesi', (req, res) => {
+        if (!sessioneRegistrazioneAperta(req.params.token)) return res.status(404).json({ error: 'Link non valido o scaduto' });
+        res.json(cercaPerPrefisso(PAESI, req.query.search, 'denominazione').map(p => ({ denominazione: p.denominazione, codiceBelfiore: p.codice_belfiore })));
+    });
+    app.get('/anamnesi/:token/cf', (req, res) => {
+        if (!sessioneRegistrazioneAperta(req.params.token)) return res.status(404).json({ error: 'Link non valido o scaduto' });
+        try {
+            const { cognome, nome, sesso, dataNascita, codiceBelfiore } = req.query;
+            res.json({ codiceFiscale: calcolaCodiceFiscale({ cognome, nome, sesso, dataNascita, codiceBelfiore }) });
+        } catch (err) {
+            res.status(400).json({ error: err.message });
+        }
+    });
+
     app.get('/anamnesi/:token', (req, res) => {
         const token = req.params.token;
         const session = sessions[token];
 
-        // Risposta JSON se richiesta da API
+        // Risposta JSON se richiesta da API (mai per le registrazioni: contengono dati personali e il link non e' una API)
         if (req.headers.accept && req.headers.accept.includes('application/json')) {
-            if (!session) return res.status(404).json({ error: 'Sessione non trovata' });
+            if (!session || session.tipo === 'registrazione') return res.status(404).json({ error: 'Sessione non trovata' });
             return res.json(session);
+        }
+
+        // Registrazione da smartphone: il link e' valido solo per il tempo previsto e una sola volta.
+        // Scaduto, usato o chiuso: sempre la stessa risposta, senza rivelare nulla sul paziente.
+        if (session && session.tipo === 'registrazione' && (session.status !== 'pending' || !sessioneRegistrazioneAperta(token))) {
+            res.setHeader('Content-Type', 'text/html; charset=utf-8');
+            res.setHeader('Cache-Control', 'no-store');
+            return res.status(410).send(renderErrorPage(
+                'Link non più valido',
+                'Il link per la registrazione è valido solo per pochi minuti e una sola volta. Per favore contatti la segreteria del Centro Dentale Corbo per riceverne uno nuovo.'
+            ));
         }
 
         res.setHeader('Content-Type', 'text/html; charset=utf-8');
@@ -158,6 +235,17 @@ function setupAnamnesiRoutes(app, { DATA_DIR, POLL_SECRET }) {
         if (session.status === 'completed') {
             const dataFmt = session.completedAt ? new Date(session.completedAt).toLocaleString('it-IT') : '';
             return res.send(renderSuccessPage(session, dataFmt, true));
+        }
+
+        if (session.tipo === 'registrazione') {
+            res.setHeader('Cache-Control', 'no-store');
+            if (!session.openedAt) { session.openedAt = new Date().toISOString(); saveAnamnesiState(); }
+            // dati iniettati nella pagina: '<' escluso per evitare chiusure anticipate dello <script>
+            const inietta = (v) => JSON.stringify(v).replace(/</g, '\\u003c');
+            const html = fs.readFileSync(REGISTRAZIONE_HTML, 'utf8')
+                .replace('__TOKEN__', () => inietta(token))
+                .replace('__QUESTIONS__', () => inietta(session.questions || []));
+            return res.send(html);
         }
 
         res.send(renderFormPage(session));
@@ -176,6 +264,68 @@ function setupAnamnesiRoutes(app, { DATA_DIR, POLL_SECRET }) {
 
         if (session.status === 'completed') {
             return res.status(400).json({ error: 'Anamnesi già inviata e registrata in precedenza' });
+        }
+
+        if (session.tipo === 'registrazione') {
+            if (!sessioneRegistrazioneAperta(token)) return res.status(410).json({ error: 'Link scaduto: contatti la segreteria.' });
+            const b = req.body || {};
+            const a = b.anagrafica || {};
+            const cognome = String(a.cognome || '').trim(), nome = String(a.nome || '').trim();
+            const cf = String(a.cf || '').trim().toUpperCase();
+            const sesso = parseInt(a.sesso, 10);
+            const err = (m) => res.status(400).json({ error: m });
+            if (!cognome || !nome) return err('Cognome e nome sono obbligatori.');
+            if (sesso !== 0 && sesso !== 1) return err('Indicare il sesso.');
+            if (!/^\d{4}-\d{2}-\d{2}$/.test(String(a.dataNascita || ''))) return err('Data di nascita non valida.');
+            const nascita = new Date(a.dataNascita + 'T00:00:00Z');
+            if (isNaN(nascita) || nascita > new Date() || nascita.getUTCFullYear() < 1900) return err('Data di nascita non valida.');
+            if (!String(a.luogoNascita || '').trim() || !a.codiceBelfiore) return err('Indicare il luogo di nascita.');
+            if (!String(a.cellulare || '').trim()) return err('Il numero di cellulare è obbligatorio.');
+            const oggi = new Date();
+            let eta = oggi.getUTCFullYear() - nascita.getUTCFullYear();
+            if (oggi.getUTCMonth() < nascita.getUTCMonth() || (oggi.getUTCMonth() === nascita.getUTCMonth() && oggi.getUTCDate() < nascita.getUTCDate())) eta--;
+            if (eta < 18 && !String(a.genitore || '').trim()) return err('Paziente minorenne: indicare nome e cognome del genitore o tutore.');
+            const cfErr = validaCF({ cf, cognome, nome, sesso, dataNascita: a.dataNascita, codiceBelfiore: String(a.codiceBelfiore) });
+            if (cfErr) return err(cfErr);
+            if (!b.consenso) return err('È necessario accettare il consenso al trattamento dei dati.');
+            if (typeof b.firmaData !== 'string' || !b.firmaData.startsWith('data:image/png;base64,') || b.firmaData.length > 3000000) return err('Firma grafica obbligatoria.');
+
+            const crit = b.critici || {}, txt = b.textFields || {};
+            const adesso = new Date().toISOString();
+            session.status = 'completed';
+            session.completedAt = adesso;
+            session.acknowledged = false;
+            session.datiCompilati = {
+                anagrafica: {
+                    cognome, nome, cf, sesso, dataNascita: a.dataNascita,
+                    luogoNascita: String(a.luogoNascita).trim(), codiceBelfiore: String(a.codiceBelfiore),
+                    genitore: String(a.genitore || '').trim(),
+                    indirizzo: String(a.indirizzo || '').trim(), civico: String(a.civico || '').trim(), cap: String(a.cap || '').trim(),
+                    citta: String(a.citta || '').trim(), provincia: String(a.provincia || '').trim().toUpperCase(),
+                    cellulare: String(a.cellulare).trim(), email: String(a.email || '').trim()
+                },
+                answers: Array.isArray(b.answers) ? b.answers.map(Number).filter(Boolean) : [],
+                critici: {
+                    allergiaAnestetico: !!crit.allergiaAnestetico,
+                    allergiaAnesteticoSpecifica: String(crit.allergiaAnesteticoSpecifica || '').trim(),
+                    allergiaFarmaci: !!crit.allergiaFarmaci,
+                    allergiaFarmaciSpecifica: String(crit.allergiaFarmaciSpecifica || '').trim(),
+                    allergiaLattice: !!crit.allergiaLattice,
+                    portatorePacemaker: !!crit.portatorePacemaker
+                },
+                textFields: {
+                    farmaciPrescritti: String(txt.farmaciPrescritti || '').trim(),
+                    altreMalattie: String(txt.altreMalattie || '').trim()
+                },
+                firmaData: b.firmaData,
+                consensoPrivacy: true,
+                dataFirma: adesso,
+                ip: req.headers['x-forwarded-for'] || req.socket.remoteAddress,
+                userAgent: req.headers['user-agent']
+            };
+            saveAnamnesiState();
+            console.log(`✅ [Registrazione] Ricevuta registrazione da smartphone (token ${token})`);
+            return res.json({ success: true, message: 'Registrazione acquisita con successo' });
         }
 
         const {
@@ -294,7 +444,7 @@ p { font-size: 14.5px; color: #475569; line-height: 1.6; margin: 0 0 18px; }
     <div class="icon"><i class="fa-solid fa-circle-check"></i></div>
     <h1>${giaInviata ? 'Anamnesi già registrata' : 'Anamnesi inviata con successo!'}</h1>
     <div class="patient-badge">
-        Paziente: <strong>${session.cognome} ${session.nome}</strong>
+        ${session.cognome || session.nome ? `Paziente: <strong>${session.cognome} ${session.nome}</strong>` : 'Registrazione ricevuta'}
         ${dataFmt ? `<div class="time"><i class="fa-solid fa-clock"></i> Acquisita e firmata il ${dataFmt}</div>` : ''}
     </div>
     <p>Il suo questionario sanitario e la sua firma sono stati archiviati in sicurezza nella cartella clinica del <strong>Centro Dentale Corbo</strong>.</p>
