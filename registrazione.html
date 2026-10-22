@@ -155,6 +155,7 @@ body { -webkit-user-select: none; user-select: none; overscroll-behavior: none; 
     transition: all 0.2s ease;
 }
 .q-card.is-yes { background: #ecfdf5; border-color: #a7f3d0; }
+.q-card.mancante { background: #fffbeb; border-color: #f59e0b; }
 .q-label { font-size: 14px; font-weight: 600; color: #334155; flex: 1; }
 .q-toggle-wrap { display: flex; background: #e2e8f0; border-radius: 8px; padding: 3px; gap: 3px; flex-shrink: 0; }
 .btn-toggle {
@@ -358,6 +359,17 @@ textarea.form-control { resize: vertical; min-height: 80px; }
 
         </div>
 
+        <div class="section-card">
+            <div class="section-title"><i class="fa-solid fa-syringe"></i> Anestesia dal dentista</div>
+            <div class="q-card" id="card-anestesia-dentista" data-obbligatoria="1">
+                <div class="q-label">Ha <strong>mai fatto anestesia dal dentista</strong>? <span style="color:#d97706;">(scelga SÌ o NO)</span></div>
+                <div class="q-toggle-wrap">
+                    <button type="button" class="btn-toggle no" data-val="no">NO</button>
+                    <button type="button" class="btn-toggle yes" data-val="yes">SÌ</button>
+                </div>
+            </div>
+        </div>
+
         <div class="section-card critical">
             <div class="section-title"><i class="fa-solid fa-heart-pulse"></i> Avvisi Clinici Fondamentali</div>
             <div class="section-desc">Dispositivi medici impiantati.</div>
@@ -498,12 +510,12 @@ textarea.form-control { resize: vertical; min-height: 80px; }
             if (card.dataset.bound) return;
             card.dataset.bound = '1';
             no.addEventListener('click', (e) => {
-                e.preventDefault(); no.classList.add('active'); yes.classList.remove('active'); card.classList.remove('is-yes');
+                e.preventDefault(); no.classList.add('active'); yes.classList.remove('active'); card.classList.remove('is-yes', 'mancante');
                 if (card.id === 'card-crit-anestetico') $('group-anestetico-spec').style.display = 'none';
                 if (card.id === 'card-crit-farmaci') $('group-farmaci-spec').style.display = 'none';
             });
             yes.addEventListener('click', (e) => {
-                e.preventDefault(); yes.classList.add('active'); no.classList.remove('active'); card.classList.add('is-yes');
+                e.preventDefault(); yes.classList.add('active'); no.classList.remove('active'); card.classList.add('is-yes'); card.classList.remove('mancante');
                 if (card.id === 'card-crit-anestetico') { $('group-anestetico-spec').style.display = 'block'; $('anestetico-specifica').focus(); }
                 if (card.id === 'card-crit-farmaci') { $('group-farmaci-spec').style.display = 'block'; $('farmaci-specifica').focus(); }
             });
@@ -511,6 +523,7 @@ textarea.form-control { resize: vertical; min-height: 80px; }
     }
     setupToggles(document.querySelector('.critical'));
     setupToggles($('allergie-static-holder'));
+    setupToggles($('card-anestesia-dentista').parentElement);
 
     // Stesse categorie (per ID) usate dal gestionale e dal PDF anamnesi
     const CATEGORIE = [
@@ -730,8 +743,10 @@ textarea.form-control { resize: vertical; min-height: 80px; }
         $('group-anestetico-spec').style.display = 'none';
         $('group-farmaci-spec').style.display = 'none';
         document.querySelectorAll('.q-card').forEach(c => {
-            c.classList.remove('is-yes');
-            c.querySelector('.btn-toggle.no')?.classList.add('active');
+            c.classList.remove('is-yes', 'mancante');
+            // le domande a risposta obbligatoria partono senza nessuna scelta
+            if (c.dataset.obbligatoria) c.querySelector('.btn-toggle.no')?.classList.remove('active');
+            else c.querySelector('.btn-toggle.no')?.classList.add('active');
             c.querySelector('.btn-toggle.yes')?.classList.remove('active');
         });
         $('tablet-error').className = 'form-alert';
@@ -769,6 +784,12 @@ textarea.form-control { resize: vertical; min-height: 80px; }
         if (!v('f-cellulare')) return errore('Inserisca un numero di cellulare.', $('f-cellulare'));
         const minorenne = calcolaEta(v('f-nascita')) < 18;
         if (minorenne && !v('f-genitore')) return errore('Paziente minorenne: indichi nome e cognome del genitore o tutore.', $('f-genitore'));
+        const anestesiaSi = !!document.querySelector('#card-anestesia-dentista .btn-toggle.yes.active');
+        const anestesiaNo = !!document.querySelector('#card-anestesia-dentista .btn-toggle.no.active');
+        if (!anestesiaSi && !anestesiaNo) {
+            $('card-anestesia-dentista').classList.add('mancante');
+            return errore('Indichi se ha mai fatto anestesia dal dentista (SÌ o NO).', $('card-anestesia-dentista'));
+        }
         if (!hasDrawn) return errore('Apponga la sua firma nel riquadro prima di salvare.', sigBox);
         if (!$('privacy-consent').checked) return errore('È necessario accettare il consenso al trattamento dei dati.', $('privacy-consent'));
 
@@ -804,7 +825,8 @@ textarea.form-control { resize: vertical; min-height: 80px; }
                         allergiaFarmaci,
                         allergiaFarmaciSpecifica: allergiaFarmaci ? v('farmaci-specifica') : '',
                         allergiaLattice: yes('#card-crit-lattice'),
-                        portatorePacemaker: yes('#card-crit-pacemaker')
+                        portatorePacemaker: yes('#card-crit-pacemaker'),
+                        anestesiaDentista: anestesiaSi
                     },
                     textFields: { farmaciPrescritti: v('farmaci-prescritti'), altreMalattie: v('altre-malattie') },
                     firmaData: canvas.toDataURL('image/png'),

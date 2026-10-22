@@ -291,6 +291,7 @@ function setupAnamnesiRoutes(app, { DATA_DIR, POLL_SECRET }) {
             if (typeof b.firmaData !== 'string' || !b.firmaData.startsWith('data:image/png;base64,') || b.firmaData.length > 3000000) return err('Firma grafica obbligatoria.');
 
             const crit = b.critici || {}, txt = b.textFields || {};
+            if (typeof crit.anestesiaDentista !== 'boolean') return err('Indicare se ha mai fatto anestesia dal dentista (SÌ o NO).');
             const adesso = new Date().toISOString();
             session.status = 'completed';
             session.completedAt = adesso;
@@ -311,7 +312,8 @@ function setupAnamnesiRoutes(app, { DATA_DIR, POLL_SECRET }) {
                     allergiaFarmaci: !!crit.allergiaFarmaci,
                     allergiaFarmaciSpecifica: String(crit.allergiaFarmaciSpecifica || '').trim(),
                     allergiaLattice: !!crit.allergiaLattice,
-                    portatorePacemaker: !!crit.portatorePacemaker
+                    portatorePacemaker: !!crit.portatorePacemaker,
+                    anestesiaDentista: crit.anestesiaDentista
                 },
                 textFields: {
                     farmaciPrescritti: String(txt.farmaciPrescritti || '').trim(),
@@ -345,6 +347,10 @@ function setupAnamnesiRoutes(app, { DATA_DIR, POLL_SECRET }) {
             return res.status(400).json({ error: 'Il consenso al trattamento dei dati sanitari è obbligatorio' });
         }
 
+        if (typeof critici?.anestesiaDentista !== 'boolean') {
+            return res.status(400).json({ error: 'Indicare se ha mai fatto anestesia dal dentista (SÌ o NO).' });
+        }
+
         const now = new Date().toISOString();
         session.status = 'completed';
         session.completedAt = now;
@@ -355,7 +361,8 @@ function setupAnamnesiRoutes(app, { DATA_DIR, POLL_SECRET }) {
                 allergiaAnestetico: !!critici?.allergiaAnestetico,
                 allergiaAnesteticoSpecifica: (critici?.allergiaAnesteticoSpecifica || '').trim(),
                 allergiaLattice: !!critici?.allergiaLattice,
-                portatorePacemaker: !!critici?.portatorePacemaker
+                portatorePacemaker: !!critici?.portatorePacemaker,
+                anestesiaDentista: critici.anestesiaDentista
             },
             textFields: {
                 malattieCardio: (textFields?.malattieCardio || '').trim(),
@@ -543,6 +550,7 @@ body { background: var(--bg); color: var(--text); padding-bottom: 60px; line-hei
 /* Question item with SÌ / NO toggle */
 .q-card { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 14px; border-radius: 10px; background: #f8fafc; border: 1px solid #f1f5f9; margin-bottom: 8px; transition: all 0.2s ease; }
 .q-card.is-yes { background: #ecfdf5; border-color: #a7f3d0; }
+.q-card.mancante { background: #fffbeb; border-color: #f59e0b; }
 .q-label { font-size: 13.5px; font-weight: 500; color: #334155; flex: 1; }
 .q-toggle-wrap { display: flex; background: #e2e8f0; border-radius: 8px; padding: 2px; gap: 2px; flex-shrink: 0; }
 .btn-toggle { border: none; background: transparent; padding: 6px 14px; font-size: 12.5px; font-weight: 700; border-radius: 6px; cursor: pointer; color: #64748b; transition: all 0.15s ease; }
@@ -629,6 +637,14 @@ textarea.form-control { resize: vertical; min-height: 70px; }
                 <div class="q-label">È portatore di <strong>pacemaker o defibrillatore</strong> cardiaco?</div>
                 <div class="q-toggle-wrap">
                     <button type="button" class="btn-toggle no active" data-val="no">NO</button>
+                    <button type="button" class="btn-toggle yes" data-val="yes">SÌ</button>
+                </div>
+            </div>
+
+            <div class="q-card" id="card-anestesia-dentista">
+                <div class="q-label">Ha <strong>mai fatto anestesia dal dentista</strong>? <span style="color:#d97706;">(scelga SÌ o NO)</span></div>
+                <div class="q-toggle-wrap">
+                    <button type="button" class="btn-toggle no" data-val="no">NO</button>
                     <button type="button" class="btn-toggle yes" data-val="yes">SÌ</button>
                 </div>
             </div>
@@ -723,7 +739,7 @@ textarea.form-control { resize: vertical; min-height: 70px; }
             e.preventDefault();
             btnNo.classList.add('active');
             btnYes.classList.remove('active');
-            card.classList.remove('is-yes');
+            card.classList.remove('is-yes', 'mancante');
             if (card.id === 'card-crit-anestetico') {
                 document.getElementById('group-anestetico-spec').style.display = 'none';
             }
@@ -734,6 +750,7 @@ textarea.form-control { resize: vertical; min-height: 70px; }
             btnYes.classList.add('active');
             btnNo.classList.remove('active');
             card.classList.add('is-yes');
+            card.classList.remove('mancante');
             if (card.id === 'card-crit-anestetico') {
                 document.getElementById('group-anestetico-spec').style.display = 'block';
                 document.getElementById('anestetico-specifica').focus();
@@ -833,6 +850,17 @@ textarea.form-control { resize: vertical; min-height: 70px; }
         formError.style.display = 'none';
         formError.textContent = '';
 
+        const cardAnestesia = document.getElementById('card-anestesia-dentista');
+        const anestesiaSi = !!cardAnestesia.querySelector('.btn-toggle.yes.active');
+        const anestesiaNo = !!cardAnestesia.querySelector('.btn-toggle.no.active');
+        if (!anestesiaSi && !anestesiaNo) {
+            cardAnestesia.classList.add('mancante');
+            formError.textContent = 'Indichi se ha mai fatto anestesia dal dentista (SÌ o NO).';
+            formError.style.display = 'block';
+            cardAnestesia.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            return;
+        }
+
         if (!hasDrawn) {
             formError.textContent = 'Per favore, apponga la sua firma sul display prima di inviare.';
             formError.style.display = 'block';
@@ -881,7 +909,8 @@ textarea.form-control { resize: vertical; min-height: 70px; }
                         allergiaAnestetico,
                         allergiaAnesteticoSpecifica,
                         allergiaLattice,
-                        portatorePacemaker
+                        portatorePacemaker,
+                        anestesiaDentista: anestesiaSi
                     },
                     textFields,
                     firmaData: signatureData,
