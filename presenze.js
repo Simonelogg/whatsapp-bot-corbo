@@ -146,7 +146,14 @@ function setupPresenzeRoutes(app, { DATA_DIR, POLL_SECRET }) {
     });
 
     app.post('/presenze/api/config', admin, (req, res) => {
-        const { studio, raggio, nuovoQr } = req.body || {};
+        const { studio, raggio, nuovoQr, chiusure } = req.body || {};
+        // Periodi di chiusura dello studio (es. agosto): quei giorni non contano come assenze
+        if (Array.isArray(chiusure)) {
+            db.config.chiusure = chiusure
+                .filter(c => c && RE_GIORNO.test(c.dal) && RE_GIORNO.test(c.al || c.dal) && (c.al || c.dal) >= c.dal)
+                .map(c => ({ dal: c.dal, al: c.al || c.dal, nota: String(c.nota || '').slice(0, 100) }))
+                .sort((a, b) => a.dal.localeCompare(b.dal));
+        }
         if (studio && typeof studio.lat === 'number' && typeof studio.lng === 'number') db.config.studio = { lat: studio.lat, lng: studio.lng };
         if (raggio != null) db.config.raggio = Math.min(Math.max(parseInt(raggio, 10) || 150, 30), 1000);
         if (nuovoQr) db.config.qrToken = rnd(12);

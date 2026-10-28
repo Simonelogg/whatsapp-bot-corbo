@@ -3,168 +3,194 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Presenze - Centro Dentale Corbo</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<title>Gestione presenze - Centro Dentale Corbo</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <style>
     :root {
-        --blu: #0d47a1; --blu-2: #1565c0; --blu-chiaro: #e8f0fe;
-        --testo: #0f172a; --testo-2: #475569; --testo-3: #94a3b8;
-        --bordo: #e2e8f0; --bordo-2: #cbd5e1; --sfondo: #f4f6fa; --carta: #fff;
-        --P: #16a34a; --P-bg: #dcfce7; --F: #2563eb; --F-bg: #dbeafe; --R: #7c3aed; --R-bg: #ede9fe;
-        --EF: #0891b2; --EF-bg: #cffafe; --M: #db2777; --M-bg: #fce7f3; --A: #b45309; --A-bg: #fef3c7;
-        --KO: #dc2626; --KO-bg: #fee2e2;
+        --navy: #0b2545; --navy-2: #13315c; --accento: #1d4e89;
+        --testo: #1f2933; --testo-2: #52606d; --testo-3: #9aa5b1;
+        --linea: #d9dee4; --linea-2: #bcc5ce; --fondo: #eef1f4; --carta: #fff; --testata: #f5f7f9;
+        /* codici della scheda: toni smorzati */
+        --P: #1e6b34; --P-bg: #e3f1e6; --F: #1d4e89; --F-bg: #e1eaf5; --R: #5b3a8a; --R-bg: #ece6f4;
+        --EF: #0f6170; --EF-bg: #dff0f2; --M: #9b1c2c; --M-bg: #f6e3e5; --A: #8a5a00; --A-bg: #f7eedb;
+        --KO: #b42318; --FS: #6b7280; --FS-bg: #eceef1;
     }
     * { box-sizing: border-box; }
-    body { margin: 0; font-family: Inter, 'Segoe UI', Arial, sans-serif; background: var(--sfondo); color: var(--testo); font-size: 14px; }
-    button { font-family: inherit; }
+    body { margin: 0; font-family: 'Segoe UI', -apple-system, Roboto, Arial, sans-serif; background: var(--fondo); color: var(--testo); font-size: 13px; }
+    button, input, select { font-family: inherit; font-size: 13px; }
+    a { color: var(--accento); }
 
-    /* Barra superiore */
-    .top { background: linear-gradient(90deg, var(--blu), var(--blu-2)); color: #fff; position: sticky; top: 0; z-index: 20; box-shadow: 0 2px 8px rgba(13,71,161,.25); }
-    .top-in { max-width: 1500px; margin: 0 auto; padding: 0 20px; display: flex; align-items: center; gap: 24px; min-height: 60px; flex-wrap: wrap; }
-    .brand { display: flex; align-items: center; gap: 10px; font-weight: 700; font-size: 17px; white-space: nowrap; }
-    .brand small { display: block; font-weight: 400; font-size: 11px; opacity: .75; }
-    .logo { width: 34px; height: 34px; border-radius: 9px; background: rgba(255,255,255,.18); display: grid; place-items: center; font-size: 18px; }
-    nav { display: flex; gap: 4px; flex-wrap: wrap; flex: 1; }
-    nav button { background: transparent; color: rgba(255,255,255,.8); border: 0; padding: 9px 14px; font-size: 14px; font-weight: 500; cursor: pointer; border-radius: 8px; }
-    nav button:hover { background: rgba(255,255,255,.1); color: #fff; }
-    nav button.on { background: #fff; color: var(--blu); font-weight: 700; }
-    .esci { background: rgba(255,255,255,.15); color: #fff; border: 0; padding: 8px 12px; border-radius: 8px; cursor: pointer; }
+    /* Testata */
+    .testata { background: var(--navy); color: #fff; }
+    .testata-in { max-width: 1560px; margin: 0 auto; padding: 0 20px; height: 48px; display: flex; align-items: center; gap: 14px; }
+    .ditta { font-size: 11px; letter-spacing: .12em; text-transform: uppercase; opacity: .7; }
+    .modulo { font-size: 15px; font-weight: 600; padding-left: 14px; border-left: 1px solid rgba(255,255,255,.25); }
+    .testata .spazio { flex: 1; }
+    .testata .esci { background: transparent; border: 1px solid rgba(255,255,255,.35); color: #fff; padding: 5px 12px; border-radius: 3px; cursor: pointer; }
+    .testata .esci:hover { background: rgba(255,255,255,.1); }
+    .schede { background: var(--carta); border-bottom: 1px solid var(--linea); }
+    .schede-in { max-width: 1560px; margin: 0 auto; padding: 0 20px; display: flex; gap: 2px; overflow-x: auto; }
+    .schede button { background: none; border: 0; border-bottom: 3px solid transparent; padding: 12px 14px 10px; color: var(--testo-2); cursor: pointer; font-weight: 600; white-space: nowrap; }
+    .schede button:hover { color: var(--testo); }
+    .schede button.on { color: var(--navy); border-bottom-color: var(--accento); }
 
-    main { max-width: 1500px; margin: 0 auto; padding: 22px 20px 40px; }
-    .titolo { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; flex-wrap: wrap; margin-bottom: 16px; }
-    .titolo h2 { margin: 0; font-size: 22px; }
-    .titolo p { margin: 4px 0 0; color: var(--testo-2); }
-    .card { background: var(--carta); border: 1px solid var(--bordo); border-radius: 12px; padding: 18px; margin-bottom: 18px; box-shadow: 0 1px 2px rgba(15,23,42,.04); }
-    .card h3 { margin: 0 0 14px; font-size: 16px; }
-    .muted { color: var(--testo-2); font-size: 12.5px; }
-
-    /* Indicatori */
-    .kpi { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 14px; margin-bottom: 18px; }
-    .kpi div { background: var(--carta); border: 1px solid var(--bordo); border-radius: 12px; padding: 14px 16px; border-left: 4px solid var(--c, var(--blu)); }
-    .kpi b { display: block; font-size: 28px; line-height: 1.1; }
-    .kpi span { color: var(--testo-2); font-size: 13px; }
-
-    /* Tabelle */
-    .tab-wrap { overflow-x: auto; border: 1px solid var(--bordo); border-radius: 10px; }
-    table.t { width: 100%; border-collapse: collapse; background: #fff; }
-    table.t th { background: #f8fafc; color: var(--testo-2); font-size: 11.5px; font-weight: 600; text-transform: uppercase; letter-spacing: .04em; text-align: left; padding: 11px 14px; border-bottom: 1px solid var(--bordo); white-space: nowrap; position: sticky; top: 0; }
-    table.t td { padding: 11px 14px; border-bottom: 1px solid #f1f5f9; vertical-align: middle; }
-    table.t tbody tr:hover td { background: #f8fbff; }
-    table.t tbody tr:last-child td { border-bottom: 0; }
-    table.t .n { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
-    table.t tfoot td { background: #f8fafc; font-weight: 700; border-top: 1px solid var(--bordo); }
-    .nome { font-weight: 600; }
-    .sub { display: block; color: var(--testo-3); font-size: 12px; font-weight: 400; margin-top: 2px; }
+    main { max-width: 1560px; margin: 0 auto; padding: 18px 20px 40px; }
+    .barra { display: flex; align-items: flex-end; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin-bottom: 12px; }
+    .barra h1 { font-size: 18px; font-weight: 600; margin: 0; }
+    .barra .sotto { color: var(--testo-2); margin-top: 2px; }
+    .riquadro { background: var(--carta); border: 1px solid var(--linea); border-radius: 3px; margin-bottom: 14px; }
+    .riquadro > .intesta { padding: 10px 14px; border-bottom: 1px solid var(--linea); background: var(--testata); font-weight: 600; font-size: 12px; text-transform: uppercase; letter-spacing: .04em; color: var(--testo-2); }
+    .riquadro > .corpo { padding: 14px; }
+    .muted { color: var(--testo-2); font-size: 12px; }
     .neg { color: var(--KO); }
 
-    .pill { display: inline-flex; align-items: center; gap: 6px; padding: 3px 10px; border-radius: 999px; font-size: 12.5px; font-weight: 600; white-space: nowrap; }
-    .pill::before { content: ''; width: 7px; height: 7px; border-radius: 50%; background: currentColor; }
+    /* Indicatori */
+    .indici { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); border: 1px solid var(--linea); border-radius: 3px; background: var(--carta); margin-bottom: 14px; }
+    .indici div { padding: 10px 14px; border-right: 1px solid var(--linea); }
+    .indici div:last-child { border-right: 0; }
+    .indici span { display: block; font-size: 11px; text-transform: uppercase; letter-spacing: .04em; color: var(--testo-2); }
+    .indici b { font-size: 22px; font-weight: 600; font-variant-numeric: tabular-nums; }
+
+    /* Tabelle */
+    .scroll { overflow-x: auto; }
+    table.t { width: 100%; border-collapse: collapse; }
+    table.t th { background: var(--testata); color: var(--testo-2); font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .04em; text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--linea-2); white-space: nowrap; }
+    table.t td { padding: 7px 10px; border-bottom: 1px solid var(--linea); vertical-align: middle; }
+    table.t tbody tr:nth-child(even) td { background: #fafbfc; }
+    table.t tbody tr:hover td { background: #f0f4f9; }
+    table.t .n { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+    .nome { font-weight: 600; }
+    .sub { display: block; color: var(--testo-3); font-size: 11.5px; font-weight: 400; }
+    .mono { font-family: Consolas, 'Courier New', monospace; font-size: 12.5px; }
+
+    .stato { display: inline-block; padding: 1px 7px; border-radius: 2px; font-size: 12px; font-weight: 600; border: 1px solid transparent; white-space: nowrap; }
     .s-P { background: var(--P-bg); color: var(--P); } .s-F { background: var(--F-bg); color: var(--F); }
     .s-R { background: var(--R-bg); color: var(--R); } .s-EF { background: var(--EF-bg); color: var(--EF); }
     .s-M { background: var(--M-bg); color: var(--M); } .s-A { background: var(--A-bg); color: var(--A); }
-    .s-KO { background: var(--KO-bg); color: var(--KO); } .s-OFF { background: #f1f5f9; color: var(--testo-3); }
+    .s-KO { background: #fff; color: var(--KO); border-color: #f1b8b2; } .s-OFF, .s-FS, .s-CH { background: var(--FS-bg); color: var(--FS); }
 
     /* Scheda mensile */
-    .foglio { border-collapse: separate; border-spacing: 0; font-size: 12.5px; background: #fff; }
-    .foglio th, .foglio td { border-right: 1px solid var(--bordo); border-bottom: 1px solid var(--bordo); text-align: center; }
-    .foglio thead th { background: #f8fafc; padding: 6px 0; font-weight: 600; color: var(--testo-2); position: sticky; top: 0; z-index: 2; }
-    .foglio thead th .gs { display: block; font-size: 10px; font-weight: 500; color: var(--testo-3); text-transform: uppercase; }
-    .foglio .col-nome { position: sticky; left: 0; z-index: 3; background: #fff; text-align: left; padding: 6px 12px; min-width: 185px; max-width: 185px; border-right: 2px solid var(--bordo-2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .foglio .col-nome .nome { display: block; overflow: hidden; text-overflow: ellipsis; }
-    .foglio thead .col-nome { background: #f8fafc; z-index: 4; }
-    .foglio td.g { width: 29px; min-width: 29px; height: 40px; padding: 0; cursor: pointer; font-weight: 700; font-size: 11.5px; }
-    .foglio td.g:hover { outline: 2px solid var(--blu); outline-offset: -2px; }
-    .foglio .we { background: #f8fafc; }
-    .foglio th.oggi { background: var(--blu); color: #fff; } .foglio th.oggi .gs { color: #cfe0ff; }
-    .foglio td.oggi { box-shadow: inset 2px 0 0 var(--blu), inset -2px 0 0 var(--blu); }
-    .foglio td.tot { min-width: 36px; padding: 0 4px; font-weight: 700; background: #f8fafc; font-variant-numeric: tabular-nums; }
-    .foglio th.tot { min-width: 36px; padding: 6px 4px; }
-    .foglio .sep { border-left: 2px solid var(--bordo-2); }
+    .foglio { border-collapse: collapse; font-size: 12px; user-select: none; }
+    .foglio th, .foglio td { border: 1px solid var(--linea); text-align: center; }
+    .foglio thead th { background: var(--testata); color: var(--testo-2); font-weight: 600; padding: 4px 0; }
+    .foglio thead th .gs { display: block; font-size: 10px; font-weight: 400; color: var(--testo-3); }
+    .foglio .cn { position: sticky; left: 0; z-index: 2; background: #fff; text-align: left; padding: 4px 10px; min-width: 190px; max-width: 190px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; border-right: 2px solid var(--linea-2); }
+    .foglio thead .cn { background: var(--testata); }
+    .foglio td.g { width: 30px; min-width: 30px; height: 34px; padding: 0; cursor: pointer; font-weight: 600; position: relative; }
+    .foglio td.g:hover { box-shadow: inset 0 0 0 2px var(--accento); }
+    .foglio td.sel { box-shadow: inset 0 0 0 2px var(--accento); background: #dbe7f5 !important; }
+    .foglio .we { background: #f7f8fa; }
+    .foglio th.fest { color: var(--KO); }
+    .foglio th.oggi { background: var(--navy); color: #fff; } .foglio th.oggi .gs { color: #c9d6e6; }
+    .foglio td.tt { min-width: 38px; padding: 0 4px; font-weight: 600; background: var(--testata); font-variant-numeric: tabular-nums; }
+    .foglio .sep { border-left: 2px solid var(--linea-2); }
+    .foglio tfoot td { background: var(--testata); font-weight: 600; height: 28px; color: var(--testo-2); }
     .c-P { background: var(--P-bg); color: var(--P); } .c-F { background: var(--F-bg); color: var(--F); }
     .c-R { background: var(--R-bg); color: var(--R); } .c-EF { background: var(--EF-bg); color: var(--EF); }
     .c-M { background: var(--M-bg); color: var(--M); } .c-A { background: var(--A-bg); color: var(--A); }
-    .c-KO { background: #fff; color: var(--KO); box-shadow: inset 0 0 0 1.5px #fca5a5; } .c-OFF { color: #cbd5e1; font-weight: 400; }
-    .legenda { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 12px; font-size: 12.5px; color: var(--testo-2); }
+    .c-KO { color: var(--KO); background: repeating-linear-gradient(135deg, #fff, #fff 4px, #fbecea 4px, #fbecea 6px); }
+    .c-OFF { color: #c3cad2; font-weight: 400; }
+    .c-FS, .c-CH { background: var(--FS-bg); color: var(--FS); font-size: 10px; }
+    .tag { position: absolute; right: 1px; bottom: 1px; font-size: 8.5px; line-height: 1; padding: 1px 2px; background: var(--R); color: #fff; border-radius: 1px; font-weight: 600; }
+    .man { position: absolute; left: 2px; top: 1px; font-size: 9px; color: var(--testo-2); }
+    .legenda { display: flex; flex-wrap: wrap; gap: 6px 16px; padding: 10px 14px; border-top: 1px solid var(--linea); font-size: 12px; color: var(--testo-2); }
     .legenda span { display: inline-flex; align-items: center; gap: 6px; }
-    .legenda i { font-style: normal; display: inline-grid; place-items: center; width: 24px; height: 20px; border-radius: 4px; font-weight: 700; font-size: 11px; }
-    .manuale::after { content: '•'; position: relative; top: -6px; font-size: 10px; }
+    .legenda i { font-style: normal; display: inline-grid; place-items: center; min-width: 24px; height: 18px; padding: 0 3px; font-weight: 600; font-size: 10.5px; border: 1px solid var(--linea); }
+    .firme { display: none; }
 
-    /* Menu rapido sulla casella */
-    #pop { position: fixed; z-index: 50; background: #fff; border: 1px solid var(--bordo); border-radius: 10px; box-shadow: 0 10px 30px rgba(15,23,42,.18); padding: 8px; min-width: 230px; display: none; }
-    #pop .h { padding: 6px 8px 8px; border-bottom: 1px solid var(--bordo); margin-bottom: 6px; font-weight: 600; }
-    #pop .h small { display: block; color: var(--testo-2); font-weight: 400; }
-    #pop button { display: flex; align-items: center; gap: 8px; width: 100%; text-align: left; background: none; border: 0; padding: 8px; border-radius: 6px; cursor: pointer; font-size: 13.5px; color: var(--testo); }
-    #pop button:hover { background: var(--blu-chiaro); }
-    #pop button.rosso { color: var(--KO); }
+    /* Moduli e pulsanti */
+    .campi { display: flex; gap: 10px; flex-wrap: wrap; align-items: flex-end; }
+    .campi label { display: flex; flex-direction: column; gap: 4px; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .03em; color: var(--testo-2); }
+    input, select { padding: 6px 8px; border: 1px solid var(--linea-2); border-radius: 2px; background: #fff; color: var(--testo); height: 32px; }
+    input:focus, select:focus { outline: 0; border-color: var(--accento); box-shadow: 0 0 0 2px rgba(29,78,137,.15); }
+    input[type=checkbox], input[type=radio] { height: auto; }
+    .btn { height: 32px; padding: 0 14px; border-radius: 2px; border: 1px solid var(--accento); background: var(--accento); color: #fff; cursor: pointer; font-weight: 600; white-space: nowrap; }
+    .btn:hover { background: var(--navy-2); border-color: var(--navy-2); }
+    .btn.sec { background: #fff; color: var(--testo); border-color: var(--linea-2); }
+    .btn.sec:hover { background: var(--testata); }
+    .btn.ico { width: 32px; padding: 0; }
+    .btn.rosso { background: #fff; color: var(--KO); border-color: #e7b3ad; }
+    .btn.rosso:hover { background: #fdf1f0; }
+    .lnk { background: none; border: 0; color: var(--accento); cursor: pointer; font-weight: 600; padding: 2px 4px; }
+    .lnk:hover { text-decoration: underline; } .lnk.rosso { color: var(--KO); }
+    .codice { font-family: Consolas, monospace; font-size: 14px; font-weight: 700; letter-spacing: 2px; }
 
-    /* Moduli */
-    .row { display: flex; gap: 12px; flex-wrap: wrap; align-items: flex-end; }
-    .row label { display: flex; flex-direction: column; font-size: 12px; font-weight: 600; color: var(--testo-2); gap: 5px; }
-    input, select { padding: 9px 11px; border: 1px solid var(--bordo-2); border-radius: 8px; font-size: 14px; font-family: inherit; background: #fff; color: var(--testo); }
-    input:focus, select:focus { outline: 2px solid var(--blu-chiaro); border-color: var(--blu); }
-    .b { padding: 9px 16px; border: 0; border-radius: 8px; background: var(--blu); color: #fff; cursor: pointer; font-size: 14px; font-weight: 600; white-space: nowrap; }
-    .b:hover { background: var(--blu-2); }
-    .b2 { background: #eef2f7; color: var(--testo); } .b2:hover { background: #e2e8f0; }
-    .link { background: none; border: 0; color: var(--blu); cursor: pointer; font-size: 13px; font-weight: 600; padding: 4px 6px; border-radius: 6px; }
-    .link:hover { background: var(--blu-chiaro); } .link.rosso { color: var(--KO); } .link.rosso:hover { background: var(--KO-bg); }
-    .codice { font-family: ui-monospace, Consolas, monospace; font-size: 16px; font-weight: 700; letter-spacing: 2px; background: #f1f5f9; padding: 3px 8px; border-radius: 6px; }
+    /* Finestra */
+    #velo { position: fixed; inset: 0; background: rgba(11,37,69,.35); z-index: 40; display: none; align-items: flex-start; justify-content: center; padding: 8vh 16px; overflow-y: auto; }
+    .finestra { background: #fff; width: 100%; max-width: 520px; border: 1px solid var(--linea-2); border-radius: 3px; box-shadow: 0 12px 32px rgba(11,37,69,.25); }
+    .finestra .fi-t { background: var(--navy); color: #fff; padding: 10px 14px; display: flex; justify-content: space-between; align-items: center; }
+    .finestra .fi-t b { font-size: 14px; } .finestra .fi-t small { display: block; opacity: .75; font-size: 12px; }
+    .finestra .fi-t button { background: none; border: 0; color: #fff; font-size: 20px; cursor: pointer; line-height: 1; }
+    .finestra .fi-c { padding: 14px; }
+    .finestra .fi-p { padding: 10px 14px; border-top: 1px solid var(--linea); background: var(--testata); display: flex; justify-content: flex-end; gap: 8px; }
+    .sezione { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .04em; color: var(--testo-2); margin: 0 0 8px; }
+    .elenco { border: 1px solid var(--linea); margin-bottom: 14px; }
+    .elenco div { display: flex; justify-content: space-between; align-items: center; padding: 6px 10px; border-bottom: 1px solid var(--linea); gap: 10px; }
+    .elenco div:last-child { border-bottom: 0; }
+    .tipi { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin-bottom: 12px; }
+    .tipi label { border: 1px solid var(--linea-2); padding: 7px 8px; cursor: pointer; display: flex; align-items: center; gap: 6px; font-weight: 600; border-radius: 2px; }
+    .tipi input { margin: 0; }
+    .tipi label:has(input:checked) { border-color: var(--accento); background: #eaf1f9; color: var(--navy); }
+    .durata { display: flex; gap: 16px; align-items: center; margin: 4px 0 12px; }
+    .durata label { display: flex; align-items: center; gap: 6px; }
 
-    #login { max-width: 360px; margin: 12vh auto; text-align: center; }
-    #login .logo { margin: 0 auto 12px; width: 52px; height: 52px; font-size: 26px; background: var(--blu-chiaro); }
-    #login input { width: 100%; margin: 14px 0 10px; text-align: center; font-size: 18px; }
-    #login .b { width: 100%; padding: 12px; }
+    #login { max-width: 340px; margin: 14vh auto; }
+    #login .corpo { padding: 22px; }
+    #login input { width: 100%; margin: 6px 0 12px; }
+    #login .btn { width: 100%; }
     .hidden { display: none !important; }
-    #qr { display: inline-block; padding: 18px; background: #fff; border: 1px solid var(--bordo); border-radius: 12px; }
-    #toast { position: fixed; bottom: 22px; left: 50%; transform: translateX(-50%); background: #0f172a; color: #fff; padding: 11px 18px; border-radius: 10px; font-weight: 500; z-index: 60; display: none; }
+    #qr { display: inline-block; padding: 16px; background: #fff; border: 1px solid var(--linea); }
+    #avviso { position: fixed; bottom: 18px; right: 18px; background: var(--navy); color: #fff; padding: 10px 16px; border-radius: 3px; z-index: 60; display: none; box-shadow: 0 6px 18px rgba(0,0,0,.2); }
 
     @media print {
         @page { size: A4 landscape; margin: 8mm; }
-        body { background: #fff; font-size: 11px; }
-        .top, .noprint, #pop { display: none !important; }
+        body { background: #fff; font-size: 10px; }
+        .testata, .schede, .noprint, #velo { display: none !important; }
         main { padding: 0; max-width: none; }
-        .card { border: 0; box-shadow: none; padding: 0; }
-        .tab-wrap { overflow: visible; border: 0; }
-        .foglio td.g { width: 22px; min-width: 22px; height: 22px; font-size: 9px; }
-        .foglio .col-nome { min-width: 150px; max-width: 150px; padding: 4px 6px; position: static; }
-        .foglio thead th { position: static; }
+        .riquadro { border: 0; }
+        .scroll { overflow: visible; }
+        .foglio { font-size: 9px; }
+        .foglio td.g { width: 21px; min-width: 21px; height: 20px; }
+        .foglio .cn { min-width: 140px; max-width: 140px; position: static; padding: 2px 4px; }
+        .firme { display: flex; justify-content: space-between; margin-top: 30px; font-size: 11px; }
+        .firme div { border-top: 1px solid #000; width: 260px; padding-top: 4px; text-align: center; }
         * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
     }
-    @media (max-width: 700px) { .top-in { padding: 8px 12px; gap: 8px; } main { padding: 16px 12px; } nav button { padding: 7px 9px; font-size: 13px; } }
+    @media (max-width: 700px) { main { padding: 12px; } .testata-in, .schede-in { padding: 0 12px; } .ditta { display: none; } .tipi { grid-template-columns: repeat(2, 1fr); } }
 </style>
 </head>
 <body>
-<div id="login" class="card">
-    <div class="logo">🦷</div>
-    <h2 style="margin:0;">Presenze</h2>
-    <div class="muted">Centro Dentale Corbo</div>
-    <input type="password" id="pwd" placeholder="Password" autocomplete="current-password">
-    <button class="b" id="btn-login">Entra</button>
-    <div id="login-err" class="neg" style="margin-top:10px;"></div>
+<div id="login" class="riquadro">
+    <div class="intesta">Centro Dentale Corbo · Gestione presenze</div>
+    <div class="corpo">
+        <label class="muted" for="pwd">Password</label>
+        <input type="password" id="pwd" autocomplete="current-password">
+        <button class="btn" id="btn-login">Accedi</button>
+        <div id="login-err" class="neg" style="margin-top:10px;"></div>
+    </div>
 </div>
 
 <div id="app" class="hidden">
-<div class="top"><div class="top-in">
-    <div class="brand"><div class="logo">🦷</div><div>Presenze<small>Centro Dentale Corbo</small></div></div>
-    <nav id="nav">
-        <button data-v="oggi" class="on">Oggi</button><button data-v="foglio">Scheda mensile</button><button data-v="mese">Per dipendente</button>
-        <button data-v="assenze">Ferie e assenze</button><button data-v="saldi">Saldi</button><button data-v="dip">Dipendenti</button><button data-v="imp">Impostazioni</button>
-    </nav>
-    <button class="esci" id="btn-esci" title="Esci">Esci</button>
-</div></div>
-<main>
-    <section id="v-oggi"></section>
-    <section id="v-foglio" class="hidden"></section>
-    <section id="v-mese" class="hidden"></section>
-    <section id="v-assenze" class="hidden"></section>
-    <section id="v-saldi" class="hidden"></section>
-    <section id="v-dip" class="hidden"></section>
-    <section id="v-imp" class="hidden"></section>
-</main>
+    <div class="testata"><div class="testata-in">
+        <span class="ditta">Centro Dentale Corbo</span><span class="modulo">Gestione presenze</span>
+        <span class="spazio"></span><button class="esci" id="btn-esci">Esci</button>
+    </div></div>
+    <div class="schede"><div class="schede-in" id="nav">
+        <button data-v="oggi" class="on">Oggi</button><button data-v="foglio">Foglio presenze</button><button data-v="mese">Scheda dipendente</button>
+        <button data-v="assenze">Ferie e permessi</button><button data-v="saldi">Saldi</button><button data-v="dip">Anagrafica</button><button data-v="imp">Impostazioni</button>
+    </div></div>
+    <main>
+        <section id="v-oggi"></section>
+        <section id="v-foglio" class="hidden"></section>
+        <section id="v-mese" class="hidden"></section>
+        <section id="v-assenze" class="hidden"></section>
+        <section id="v-saldi" class="hidden"></section>
+        <section id="v-dip" class="hidden"></section>
+        <section id="v-imp" class="hidden"></section>
+    </main>
 </div>
-<div id="pop"></div>
-<div id="toast"></div>
+<div id="velo"></div>
+<div id="avviso"></div>
 
 <script>
 let TOKEN = sessionStorage.getItem('presenzeToken') || '';
@@ -173,13 +199,16 @@ const $ = (id) => document.getElementById(id);
 const esc = (s) => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const GIORNI = ['Dom', 'Lun', 'Mar', 'Mer', 'Gio', 'Ven', 'Sab'];
 const INIZIALI = ['D', 'L', 'M', 'M', 'G', 'V', 'S'];
+const BREVI = ['D', 'L', 'Ma', 'Me', 'G', 'V', 'S'];
 const TIPI = { ferie: 'Ferie', rol: 'Permesso ROL', exfest: 'Ex festività', malattia: 'Malattia', altro: 'Altra assenza' };
 const SIGLA = { ferie: 'F', rol: 'R', exfest: 'EF', malattia: 'M', altro: 'A' };
+const A_ORE = (t) => t === 'rol' || t === 'exfest';
 const num = (n) => (Math.round(n * 100) / 100).toLocaleString('it-IT', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+const ore = (n) => (Math.round(n * 100) / 100).toLocaleString('it-IT', { maximumFractionDigits: 2 });
 const dataIt = (g) => new Date(g + 'T12:00').toLocaleDateString('it-IT', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
 const dataBreve = (g) => new Date(g + 'T12:00').toLocaleDateString('it-IT');
 
-function toast(t) { const e = $('toast'); e.textContent = t; e.style.display = 'block'; clearTimeout(toast.t); toast.t = setTimeout(() => { e.style.display = 'none'; }, 2500); }
+function avviso(t) { const e = $('avviso'); e.textContent = t; e.style.display = 'block'; clearTimeout(avviso.t); avviso.t = setTimeout(() => { e.style.display = 'none'; }, 2600); }
 async function api(url, opt = {}) {
     const r = await fetch(url, Object.assign({}, opt, { headers: { 'Content-Type': 'application/json', 'x-presenze-token': TOKEN } }));
     const j = await r.json().catch(() => ({}));
@@ -199,41 +228,72 @@ $('btn-login').addEventListener('click', login);
 $('pwd').addEventListener('keydown', e => { if (e.key === 'Enter') login(); });
 $('btn-esci').addEventListener('click', esci);
 
-// ---------- Calcoli (ora locale del browser = ora italiana) ----------
+// ---------- Calendario: festivita' nazionali e chiusure dello studio ----------
 const giorno = (d) => { const x = new Date(d); return `${x.getFullYear()}-${String(x.getMonth() + 1).padStart(2, '0')}-${String(x.getDate()).padStart(2, '0')}`; };
 const OGGI = () => giorno(new Date());
+const festeCache = {};
+function feste(anno) {
+    if (festeCache[anno]) return festeCache[anno];
+    // Pasqua (algoritmo di Meeus/Jones/Butcher) e Pasquetta
+    const a = anno % 19, b = Math.floor(anno / 100), c = anno % 100, d = Math.floor(b / 4), e = b % 4, f = Math.floor((b + 8) / 25),
+        g = Math.floor((b - f + 1) / 3), h = (19 * a + b - d - g + 15) % 30, i = Math.floor(c / 4), k = c % 4,
+        l = (32 + 2 * e + 2 * i - h - k) % 7, m = Math.floor((a + 11 * h + 22 * l) / 451),
+        mese = Math.floor((h + l - 7 * m + 114) / 31), gg = ((h + l - 7 * m + 114) % 31) + 1;
+    const pasquetta = new Date(anno, mese - 1, gg + 1);
+    const out = {
+        [`${anno}-01-01`]: 'Capodanno', [`${anno}-01-06`]: 'Epifania', [`${anno}-04-25`]: 'Festa della Liberazione',
+        [`${anno}-05-01`]: 'Festa del Lavoro', [`${anno}-06-02`]: 'Festa della Repubblica', [`${anno}-08-15`]: 'Ferragosto',
+        [`${anno}-11-01`]: 'Ognissanti', [`${anno}-12-08`]: 'Immacolata', [`${anno}-12-25`]: 'Natale', [`${anno}-12-26`]: 'Santo Stefano',
+        [giorno(pasquetta)]: 'Lunedì dell\'Angelo'
+    };
+    return (festeCache[anno] = out);
+}
+const festivo = (g) => feste(Number(g.slice(0, 4)))[g] || null;
+const chiusura = (g) => (D.config.chiusure || []).find(c => c.dal <= g && c.al >= g) || null;
+
+// ---------- Calcoli (ora locale del browser = ora italiana) ----------
 const dip = (id) => D.dipendenti.find(d => d.id === id);
 const nomeDip = (d) => `${d.cognome.toUpperCase()} ${d.nome}`;
 function giorniTra(dal, al) { const out = []; for (let d = new Date(dal + 'T12:00'); giorno(d) <= al; d.setDate(d.getDate() + 1)) out.push(giorno(d)); return out; }
-// Ore previste in un giorno: null se senza orario fisso
+// Ore di turno in un giorno: null se senza orario fisso
 function previste(d, g) {
     const dow = new Date(g + 'T12:00').getDay();
     if (!d.orario) return null;
     return dow === 0 ? 0 : (d.orario[dow] || 0);
 }
-const lavorativo = (d, g) => { const p = previste(d, g); const dow = new Date(g + 'T12:00').getDay(); return p == null ? (dow >= 1 && dow <= 5) : p > 0; };
+const inTurno = (d, g) => { const p = previste(d, g); const dow = new Date(g + 'T12:00').getDay(); return p == null ? (dow >= 1 && dow <= 5) : p > 0; };
+// Giorno lavorativo effettivo: in turno, non festivo, studio aperto
+const lavora = (d, g) => inTurno(d, g) && !festivo(g) && !chiusura(g);
 const presenza = (id, g) => D.presenze.find(p => p.dip === id && p.giorno === g);
 function assenzeDi(id, g) { return D.assenze.filter(a => a.dip === id && a.dal <= g && a.al >= g); }
-// Stato di un giorno. codice: P presente, F/R/EF/M/A assenza registrata, KO assente senza giustificazione,
-// OFF non in turno, FUT giorno futuro senza nulla.
+// Ore di un'assenza a ore (ROL/ex festivita') cadute in un certo giorno
+function oreAssenza(a, d, g) {
+    if (!lavora(d, g)) return 0;
+    if (a.quantita > 0) return a.quantita / Math.max(1, giorniTra(a.dal, a.al).filter(x => lavora(d, x)).length);
+    return previste(d, g) ?? 8;
+}
+// Permesso parziale: meno ore del turno di quel giorno (la persona e' comunque al lavoro)
+const parziale = (a, d, g) => A_ORE(a.tipo) && oreAssenza(a, d, g) < (previste(d, g) ?? 8);
+// Stato di un giorno per la scheda e per le tabelle
 function statoGiorno(d, g) {
-    const p = presenza(d.id, g), ass = assenzeDi(d.id, g);
-    if (p) return { codice: 'P', sigla: 'P', testo: 'Presente' + (p.manuale ? ' (segnata a mano)' : ''), p };
-    // Un'assenza lunga che copre un sabato o un giorno fuori turno non va contata quel giorno
-    if (ass.length && lavorativo(d, g)) return { codice: SIGLA[ass[0].tipo], sigla: SIGLA[ass[0].tipo], testo: ass.map(a => TIPI[a.tipo] + (a.nota ? ': ' + a.nota : '')).join(', '), ass };
-    if (!lavorativo(d, g)) return { codice: 'OFF', sigla: '·', testo: 'Non in turno' };
-    if (g > OGGI()) return { codice: 'FUT', sigla: '', testo: 'Da venire' };
-    return { codice: 'KO', sigla: '✕', testo: 'Assente senza giustificazione' };
+    const p = presenza(d.id, g), ass = assenzeDi(d.id, g).filter(a => lavora(d, g));
+    const orePerm = ass.filter(a => A_ORE(a.tipo)).reduce((t, a) => t + oreAssenza(a, d, g), 0);
+    const base = { p, ass, orePerm };
+    if (p) return { ...base, codice: 'P', sigla: 'P', testo: 'Presente' + (p.manuale ? ' (inserita a mano)' : '') + (orePerm ? ` · permesso ${ore(orePerm)} h` : '') };
+    const intera = ass.find(a => !parziale(a, d, g));
+    if (intera) return { ...base, codice: SIGLA[intera.tipo], sigla: SIGLA[intera.tipo], testo: ass.map(a => TIPI[a.tipo] + (A_ORE(a.tipo) ? ` ${ore(oreAssenza(a, d, g))} h` : '') + (a.nota ? ' – ' + a.nota : '')).join(', ') };
+    const fs = festivo(g); if (fs && inTurno(d, g)) return { ...base, codice: 'FS', sigla: 'FS', testo: fs };
+    const ch = chiusura(g); if (ch && inTurno(d, g)) return { ...base, codice: 'CH', sigla: 'CH', testo: 'Studio chiuso' + (ch.nota ? ' – ' + ch.nota : '') };
+    if (!inTurno(d, g)) return { ...base, codice: 'OFF', sigla: '·', testo: 'Fuori turno' };
+    if (g > OGGI()) return { ...base, codice: 'FUT', sigla: '', testo: ass.length ? 'Permesso programmato' : '' };
+    return { ...base, codice: 'KO', sigla: '✕', testo: 'Assenza non giustificata' + (orePerm ? ` (permesso ${ore(orePerm)} h)` : '') };
 }
 // Consumo di un'assenza sui saldi: ferie in giorni, ROL ed ex festivita' in ore.
-// Conta solo i giorni dopo la data dei saldi iniziali. Una "quantita'" indicata a mano vince sul calcolo.
+// Conta solo i giorni lavorativi dopo la data dei saldi iniziali.
 function consumo(a) {
     const d = dip(a.dip); if (!d) return 0;
-    const dopo = giorniTra(a.dal, a.al).filter(g => !d.saldi.al || g > d.saldi.al);
-    if (!dopo.length) return 0;
-    if (a.quantita > 0) return a.quantita;
-    const lav = dopo.filter(g => lavorativo(d, g));
-    if (a.tipo === 'rol' || a.tipo === 'exfest') return lav.reduce((s, g) => s + (previste(d, g) ?? 8), 0);
+    const lav = giorniTra(a.dal, a.al).filter(g => lavora(d, g) && (!d.saldi.al || g > d.saldi.al));
+    if (A_ORE(a.tipo)) return lav.reduce((s, g) => s + oreAssenza(a, d, g), 0);
     return lav.length;
 }
 function saldo(d) {
@@ -241,12 +301,11 @@ function saldo(d) {
     D.assenze.filter(a => a.dip === d.id && usato[a.tipo] != null).forEach(a => { usato[a.tipo] += consumo(a); });
     return { usato, residuo: { ferie: d.saldi.ferie - usato.ferie, rol: d.saldi.rol - usato.rol, exfest: d.saldi.exfest - usato.exfest } };
 }
-const BREVI = ['D', 'L', 'Ma', 'Me', 'G', 'V', 'S'];
-const orarioBreve = (d) => !d.orario ? 'Libero' : [1, 2, 3, 4, 5, 6].filter(g => d.orario[g] > 0).map(g => `${BREVI[g]}${d.orario[g]}`).join(' ') || '—';
 const orarioTesto = (d) => !d.orario ? 'Senza orario fisso' : [1, 2, 3, 4, 5, 6].filter(g => d.orario[g] > 0).map(g => `${GIORNI[g]} ${d.orario[g]}h`).join(' · ') || '—';
+const orarioBreve = (d) => !d.orario ? 'Orario libero' : [1, 2, 3, 4, 5, 6].filter(g => d.orario[g] > 0).map(g => `${BREVI[g]}${d.orario[g]}`).join(' ') || '—';
 const attivi = () => D.dipendenti.filter(d => d.attivo).sort((a, b) => nomeDip(a).localeCompare(nomeDip(b)));
 const opzDip = (sel) => attivi().map(d => `<option value="${d.id}" ${d.id === sel ? 'selected' : ''}>${esc(nomeDip(d))}</option>`).join('');
-const pill = (s) => s.codice === 'FUT' ? '' : `<span class="pill s-${s.codice}">${esc(s.testo)}</span>`;
+const etichetta = (s) => s.codice === 'FUT' ? (s.testo ? `<span class="stato s-R">${esc(s.testo)}</span>` : '') : `<span class="stato s-${s.codice}">${esc(s.testo)}</span>`;
 function giorniMese(mese) {
     const [y, m] = mese.split('-').map(Number);
     return Array.from({ length: new Date(y, m, 0).getDate() }, (_, i) => `${mese}-${String(i + 1).padStart(2, '0')}`);
@@ -258,219 +317,298 @@ function scaricaCsv(nome, righe) {
     a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv' }));
     a.download = nome; a.click();
 }
+// Riepilogo di un dipendente su un elenco di giorni
+function riepilogo(d, giorni) {
+    const t = { P: 0, F: 0, ROL: 0, EF: 0, M: 0, A: 0, KO: 0 };
+    for (const g of giorni) {
+        const s = statoGiorno(d, g);
+        if (s.codice === 'P') t.P++; else if (s.codice === 'KO') t.KO++;
+        for (const a of s.ass) {
+            if (a.tipo === 'rol') t.ROL += oreAssenza(a, d, g);
+            else if (a.tipo === 'exfest') t.EF += oreAssenza(a, d, g);
+            else if (s.codice !== 'P') { if (a.tipo === 'ferie') t.F++; else if (a.tipo === 'malattia') t.M++; else t.A++; }
+        }
+    }
+    return t;
+}
 
-// ---------- Azioni rapide su un giorno ----------
-async function segnaPresente(dipId, g) {
-    const nota = prompt('Motivo della presenza segnata a mano (es. telefono scarico)');
-    if (nota === null) return;
-    try { await api('/presenze/api/presenze', { method: 'POST', body: JSON.stringify({ dip: dipId, giorno: g, nota }) }); toast('Presenza segnata.'); await ricarica(); }
-    catch (e) { alert(e.message); }
-}
-async function togliPresenza(p) {
-    if (!confirm('Togliere la presenza di questo giorno?')) return;
-    await api('/presenze/api/presenze/' + p.id, { method: 'DELETE' }); toast('Presenza tolta.'); await ricarica();
-}
-async function assenzaGiorno(dipId, g, tipo) {
-    try { await api('/presenze/api/assenze', { method: 'POST', body: JSON.stringify({ dip: dipId, tipo, dal: g, al: g }) }); toast(TIPI[tipo] + ' registrata.'); await ricarica(); }
-    catch (e) { alert(e.message); }
-}
-async function eliminaAssenza(a) {
-    if (!confirm(`Eliminare ${TIPI[a.tipo]} dal ${dataBreve(a.dal)} al ${dataBreve(a.al)}? Il saldo viene ricalcolato.`)) return;
-    await api('/presenze/api/assenze/' + a.id, { method: 'DELETE' }); toast('Assenza eliminata.'); await ricarica();
-}
-function apriPop(el, d, g) {
-    const s = statoGiorno(d, g), pop = $('pop');
-    let azioni = '';
-    if (s.p) azioni += `<button class="rosso" data-a="togli">✕ Togli presenza</button>`;
-    else if (!s.ass && g <= OGGI()) azioni += `<button data-a="presente">✓ Segna presente</button>`;
-    if (!s.p && !s.ass) azioni += Object.keys(TIPI).map(t => `<button data-a="ass" data-t="${t}"><span class="pill s-${SIGLA[t]}" style="padding:1px 7px;">${SIGLA[t]}</span> ${TIPI[t]}</button>`).join('');
-    (s.ass || []).forEach((a, i) => { azioni += `<button class="rosso" data-a="del-ass" data-i="${i}">✕ Elimina ${TIPI[a.tipo]}${a.dal !== a.al ? ` (${dataBreve(a.dal)} – ${dataBreve(a.al)})` : ''}</button>`; });
-    pop.innerHTML = `<div class="h">${esc(nomeDip(d))}<small>${esc(dataIt(g))} · ${esc(s.testo)}</small></div>${azioni || '<div class="muted" style="padding:8px;">Nessuna azione.</div>'}`;
-    pop.style.display = 'block';
-    const r = el.getBoundingClientRect();
-    pop.style.left = Math.min(r.left, innerWidth - pop.offsetWidth - 10) + 'px';
-    pop.style.top = (r.bottom + pop.offsetHeight + 6 > innerHeight ? r.top - pop.offsetHeight - 6 : r.bottom + 6) + 'px';
-    pop.onclick = async (ev) => {
-        const b = ev.target.closest('button'); if (!b) return;
-        chiudiPop();
-        if (b.dataset.a === 'presente') segnaPresente(d.id, g);
-        else if (b.dataset.a === 'togli') togliPresenza(s.p);
-        else if (b.dataset.a === 'ass') assenzaGiorno(d.id, g, b.dataset.t);
-        else if (b.dataset.a === 'del-ass') eliminaAssenza(s.ass[Number(b.dataset.i)]);
+// ---------- Finestra di registrazione (dalla scheda e dal dettaglio) ----------
+function chiudiFinestra() { $('velo').style.display = 'none'; $('velo').innerHTML = ''; }
+$('velo').addEventListener('mousedown', (e) => { if (e.target === $('velo')) chiudiFinestra(); });
+document.addEventListener('keydown', (e) => { if (e.key === 'Escape') chiudiFinestra(); });
+
+function apriFinestra(d, dal, al, tipoIniziale) {
+    const singolo = dal === al;
+    const s = singolo ? statoGiorno(d, dal) : null;
+    const tutte = singolo ? assenzeDi(d.id, dal) : [];
+    const oreTurno = previste(d, dal) || 8;
+    let situazione = '';
+    if (singolo) {
+        const righe = [];
+        if (s.p) righe.push(`<div><span><span class="stato s-P">Presente</span> ${s.p.manuale ? '<span class="muted">inserita a mano' + (s.p.nota ? ': ' + esc(s.p.nota) : '') + '</span>' : `<span class="muted">${s.p.dist} m dallo studio</span>`}</span><button class="lnk rosso" data-togli-p>Togli</button></div>`);
+        tutte.forEach(a => righe.push(`<div><span><span class="stato s-${SIGLA[a.tipo]}">${TIPI[a.tipo]}</span> <span class="muted">${a.dal !== a.al ? dataBreve(a.dal) + ' – ' + dataBreve(a.al) : ''}${A_ORE(a.tipo) ? ' ' + ore(oreAssenza(a, d, dal)) + ' h' : ''}${a.nota ? ' · ' + esc(a.nota) : ''}</span></span><button class="lnk rosso" data-del-a="${a.id}">Elimina</button></div>`));
+        const fs = festivo(dal), ch = chiusura(dal);
+        if (fs) righe.push(`<div><span class="stato s-FS">${esc(fs)}</span></div>`);
+        if (ch) righe.push(`<div><span class="stato s-CH">Studio chiuso${ch.nota ? ' – ' + esc(ch.nota) : ''}</span></div>`);
+        if (!righe.length) righe.push(`<div><span class="muted">${esc(s.testo || 'Nessuna registrazione.')}</span></div>`);
+        situazione = `<p class="sezione">Situazione del giorno</p><div class="elenco">${righe.join('')}</div>`;
+    }
+    const tipi = [['presenza', 'Presenza'], ...Object.entries(TIPI)];
+    const preferito = tipoIniziale || (singolo && s.codice === 'KO' ? 'presenza' : 'rol');
+    $('velo').innerHTML = `<div class="finestra" role="dialog" aria-modal="true">
+        <div class="fi-t"><div><b>${esc(nomeDip(d))}</b><small>${singolo ? esc(dataIt(dal)) : `dal ${dataBreve(dal)} al ${dataBreve(al)}`} · turno ${esc(orarioBreve(d))}</small></div><button title="Chiudi" data-chiudi>×</button></div>
+        <div class="fi-c">${situazione}
+            <p class="sezione">Registra</p>
+            <div class="tipi">${tipi.map(([k, v]) => `<label><input type="radio" name="fi-tipo" value="${k}" ${k === preferito ? 'checked' : ''}> ${v}</label>`).join('')}</div>
+            <div class="campi" style="margin-bottom:12px;">
+                <label>Dal<input type="date" id="fi-dal" value="${dal}"></label>
+                <label>Al<input type="date" id="fi-al" value="${al}"></label>
+            </div>
+            <div id="fi-durata" class="durata">
+                <label><input type="radio" name="fi-dur" value="intera" ${singolo && s.p ? '' : 'checked'}> Giornata intera</label>
+                <label><input type="radio" name="fi-dur" value="ore" ${singolo && s.p ? 'checked' : ''}> Ore al giorno</label>
+                <input type="number" id="fi-ore" min="0.5" max="12" step="0.5" value="${Math.min(2, oreTurno)}" style="width:80px;" disabled>
+            </div>
+            <div class="campi"><label style="flex:1;">Nota<input id="fi-nota" placeholder="es. visita medica, certificato n." style="width:100%;"></label></div>
+            <p class="muted" id="fi-info" style="margin:10px 0 0;"></p>
+        </div>
+        <div class="fi-p"><button class="btn sec" data-chiudi>Annulla</button><button class="btn" id="fi-salva">Registra</button></div>
+    </div>`;
+    $('velo').style.display = 'flex';
+    const v = $('velo');
+    const tipoSel = () => v.querySelector('input[name=fi-tipo]:checked').value;
+    const aggiorna = () => {
+        const t = tipoSel();
+        $('fi-durata').style.display = A_ORE(t) ? '' : 'none';
+        $('fi-ore').disabled = v.querySelector('input[name=fi-dur]:checked').value !== 'ore';
+        const gi = giorniTra($('fi-dal').value, $('fi-al').value || $('fi-dal').value).filter(g => lavora(d, g));
+        $('fi-info').textContent = t === 'presenza' ? 'Segna presente nei giorni di turno indicati, fino a oggi.'
+            : `${gi.length === 1 ? '1 giorno lavorativo' : gi.length + ' giorni lavorativi'} nel periodo (festivi, chiusure e giorni fuori turno esclusi).` + (A_ORE(t) && v.querySelector('input[name=fi-dur]:checked').value === 'ore' ? ` Totale ${ore(gi.length * (Number($('fi-ore').value) || 0))} h.` : '');
+    };
+    v.querySelectorAll('input').forEach(i => i.addEventListener('input', aggiorna));
+    aggiorna();
+    v.querySelectorAll('[data-chiudi]').forEach(b => b.onclick = chiudiFinestra);
+    v.querySelector('[data-togli-p]')?.addEventListener('click', async () => {
+        if (!confirm('Togliere la presenza di questo giorno?')) return;
+        await api('/presenze/api/presenze/' + s.p.id, { method: 'DELETE' }); chiudiFinestra(); avviso('Presenza tolta.'); await ricarica();
+    });
+    v.querySelectorAll('[data-del-a]').forEach(b => b.onclick = async () => {
+        const a = D.assenze.find(x => x.id === Number(b.dataset.delA));
+        if (!confirm(`Eliminare ${TIPI[a.tipo]}${a.dal !== a.al ? ` (dal ${dataBreve(a.dal)} al ${dataBreve(a.al)})` : ''}? Il saldo viene ricalcolato.`)) return;
+        await api('/presenze/api/assenze/' + a.id, { method: 'DELETE' }); chiudiFinestra(); avviso('Registrazione eliminata.'); await ricarica();
+    });
+    $('fi-salva').onclick = async () => {
+        const t = tipoSel(), da = $('fi-dal').value, a = $('fi-al').value || da, nota = $('fi-nota').value;
+        if (!da || a < da) return alert('Controlla le date.');
+        try {
+            if (t === 'presenza') {
+                const gi = giorniTra(da, a).filter(g => g <= OGGI() && (da === a || lavora(d, g)) && !presenza(d.id, g));
+                if (!gi.length) return alert('Nessun giorno da segnare nel periodo.');
+                for (const g of gi) await api('/presenze/api/presenze', { method: 'POST', body: JSON.stringify({ dip: d.id, giorno: g, nota }) });
+                avviso(gi.length === 1 ? 'Presenza registrata.' : `${gi.length} presenze registrate.`);
+            } else {
+                let quantita = 0;
+                if (A_ORE(t) && v.querySelector('input[name=fi-dur]:checked').value === 'ore') {
+                    const h = Number($('fi-ore').value);
+                    if (!(h > 0)) return alert('Indica le ore.');
+                    quantita = h * Math.max(1, giorniTra(da, a).filter(g => lavora(d, g)).length);
+                }
+                await api('/presenze/api/assenze', { method: 'POST', body: JSON.stringify({ dip: d.id, tipo: t, dal: da, al: a, quantita, nota }) });
+                avviso(TIPI[t] + ' registrata.');
+            }
+            chiudiFinestra(); await ricarica();
+        } catch (e) { alert(e.message); }
     };
 }
-function chiudiPop() { $('pop').style.display = 'none'; }
-document.addEventListener('click', (e) => { if (!e.target.closest('#pop') && !e.target.closest('[data-cella]')) chiudiPop(); });
-document.addEventListener('keydown', (e) => { if (e.key === 'Escape') chiudiPop(); });
-window.addEventListener('scroll', chiudiPop, true);
 
 // ---------- Viste ----------
 function vOggi() {
     const g = OGGI();
     const lista = attivi().map(d => ({ d, s: statoGiorno(d, g) }));
     const conta = (f) => lista.filter(f).length;
-    const ordine = { KO: 0, P: 1, OFF: 3 };
+    const ordine = { KO: 0, P: 1, OFF: 4, FS: 3, CH: 3 };
     lista.sort((a, b) => (ordine[a.s.codice] ?? 2) - (ordine[b.s.codice] ?? 2) || nomeDip(a.d).localeCompare(nomeDip(b.d)));
-    $('v-oggi').innerHTML = `<div class="titolo"><div><h2>Oggi</h2><p>${esc(dataIt(g))}</p></div></div>
-        <div class="kpi">
-            <div style="--c:var(--P)"><b>${conta(x => x.s.codice === 'P')}</b><span>Presenti</span></div>
-            <div style="--c:var(--KO)"><b>${conta(x => x.s.codice === 'KO')}</b><span>Non ancora presenti</span></div>
-            <div style="--c:var(--F)"><b>${conta(x => !['P', 'KO', 'OFF', 'FUT'].includes(x.s.codice))}</b><span>Ferie, permessi, malattia</span></div>
-            <div style="--c:var(--testo-3)"><b>${conta(x => x.s.codice === 'OFF')}</b><span>Non in turno oggi</span></div>
+    const fs = festivo(g), ch = chiusura(g);
+    $('v-oggi').innerHTML = `<div class="barra"><div><h1>Situazione di oggi</h1><div class="sotto">${esc(dataIt(g))}${fs ? ' · ' + esc(fs) : ''}${ch ? ' · studio chiuso' : ''}</div></div></div>
+        <div class="indici">
+            <div><span>Presenti</span><b style="color:var(--P)">${conta(x => x.s.codice === 'P')}</b></div>
+            <div><span>Non ancora presenti</span><b style="color:var(--KO)">${conta(x => x.s.codice === 'KO')}</b></div>
+            <div><span>Ferie / permessi / malattia</span><b>${conta(x => ['F', 'R', 'EF', 'M', 'A'].includes(x.s.codice))}</b></div>
+            <div><span>Fuori turno</span><b style="color:var(--testo-3)">${conta(x => ['OFF', 'FS', 'CH'].includes(x.s.codice))}</b></div>
+            <div><span>Organico attivo</span><b>${lista.length}</b></div>
         </div>
-        <div class="card" style="padding:0;"><div class="tab-wrap" style="border:0;"><table class="t">
-            <thead><tr><th>Dipendente</th><th>Stato</th><th>Turno</th><th class="noprint"></th></tr></thead>
-            <tbody>${lista.map(({ d, s }) => `<tr><td class="nome">${esc(nomeDip(d))}</td><td>${pill(s)}</td><td class="muted">${esc(orarioTesto(d))}</td>
-                <td class="n noprint">${s.codice === 'KO' ? `<button class="link" data-segna="${d.id}">Segna presente</button>` : ''}</td></tr>`).join('')}</tbody>
+        <div class="riquadro"><div class="scroll"><table class="t">
+            <thead><tr><th>Dipendente</th><th>Stato</th><th>Turno settimanale</th><th class="n">Turno oggi</th><th class="noprint"></th></tr></thead>
+            <tbody>${lista.map(({ d, s }) => { const p = previste(d, g); return `<tr><td class="nome">${esc(nomeDip(d))}</td><td>${etichetta(s)}</td><td class="muted">${esc(orarioTesto(d))}</td>
+                <td class="n">${p == null ? 'libero' : p ? p + ' h' : '—'}</td>
+                <td class="n noprint"><button class="lnk" data-reg="${d.id}">Registra…</button></td></tr>`; }).join('')}</tbody>
         </table></div></div>`;
-    $('v-oggi').querySelectorAll('[data-segna]').forEach(b => b.onclick = () => segnaPresente(Number(b.dataset.segna), g));
+    $('v-oggi').querySelectorAll('[data-reg]').forEach(b => b.onclick = () => apriFinestra(dip(Number(b.dataset.reg)), g, g));
 }
 
-let meseSel = OGGI().slice(0, 7), dipSel = null;
-const selMese = () => `<label>Mese<input type="month" class="sel-mese" value="${meseSel}"></label>`;
+let meseSel = OGGI().slice(0, 7), dipSel = null, filtro = '';
+function barraMese(extra) {
+    return `<div class="campi noprint"><button class="btn sec ico" data-sposta="-1" title="Mese precedente">‹</button>
+        <label>Mese<input type="month" class="sel-mese" value="${meseSel}"></label>
+        <button class="btn sec ico" data-sposta="1" title="Mese successivo">›</button><button class="btn sec" data-sposta="0">Mese corrente</button>${extra || ''}</div>`;
+}
 function agganciaMese(sezione, ridisegna) {
     sezione.querySelector('.sel-mese').onchange = (e) => { if (e.target.value) { meseSel = e.target.value; ridisegna(); } };
     sezione.querySelectorAll('[data-sposta]').forEach(b => b.onclick = () => {
-        const [y, m] = meseSel.split('-').map(Number), n = new Date(y, m - 1 + Number(b.dataset.sposta));
-        meseSel = `${n.getFullYear()}-${String(n.getMonth() + 1).padStart(2, '0')}`; ridisegna();
+        if (b.dataset.sposta === '0') meseSel = OGGI().slice(0, 7);
+        else { const [y, m] = meseSel.split('-').map(Number), n = new Date(y, m - 1 + Number(b.dataset.sposta)); meseSel = `${n.getFullYear()}-${String(n.getMonth() + 1).padStart(2, '0')}`; }
+        ridisegna();
     });
 }
-const frecceMese = () => `<button class="b b2" data-sposta="-1" title="Mese precedente">‹</button>${selMese()}<button class="b b2" data-sposta="1" title="Mese successivo">›</button>`;
 
-// Scheda generale: tutti i dipendenti per tutti i giorni del mese
+// Foglio presenze: tutti i dipendenti per tutti i giorni del mese
 function vFoglio() {
     const giorni = giorniMese(meseSel), oggi = OGGI();
-    const dips = attivi();
+    const dips = attivi().filter(d => !filtro || nomeDip(d).toLowerCase().includes(filtro.toLowerCase()));
+    const presentiGiorno = giorni.map(() => 0);
     let corpo = '';
     for (const d of dips) {
-        const tot = { P: 0, F: 0, R: 0, EF: 0, M: 0, A: 0, KO: 0 };
         let celle = '';
-        for (const g of giorni) {
+        giorni.forEach((g, i) => {
             const s = statoGiorno(d, g), dow = new Date(g + 'T12:00').getDay();
-            if (tot[s.codice] != null) tot[s.codice]++;
-            celle += `<td class="g c-${s.codice} ${dow === 0 || dow === 6 ? 'we' : ''} ${g === oggi ? 'oggi' : ''}" data-cella="${d.id}|${g}" title="${esc(dataBreve(g) + ' · ' + s.testo)}"><span class="${s.p && s.p.manuale ? 'manuale' : ''}">${s.sigla}</span></td>`;
-        }
-        corpo += `<tr><td class="col-nome" title="${esc(orarioTesto(d))}"><span class="nome">${esc(nomeDip(d))}</span><span class="sub">${esc(orarioBreve(d))}</span></td>${celle}
-            <td class="tot sep" style="color:var(--P)">${tot.P}</td><td class="tot" style="color:var(--F)">${tot.F}</td><td class="tot" style="color:var(--R)">${tot.R + tot.EF}</td>
-            <td class="tot" style="color:var(--M)">${tot.M}</td><td class="tot" style="color:var(--A)">${tot.A}</td><td class="tot" style="color:var(--KO)">${tot.KO}</td></tr>`;
+            if (s.codice === 'P') presentiGiorno[i]++;
+            const tag = s.codice === 'P' && s.orePerm ? `<span class="tag">${ore(s.orePerm)}</span>` : (s.codice === 'FUT' && s.ass.length ? `<span class="tag">${SIGLA[s.ass[0].tipo]}</span>` : '');
+            celle += `<td class="g c-${s.codice} ${dow === 0 || dow === 6 ? 'we' : ''}" data-d="${d.id}" data-g="${g}" title="${esc(dataBreve(g) + (s.testo ? ' – ' + s.testo : ''))}">${s.p && s.p.manuale ? '<span class="man">•</span>' : ''}${s.sigla}${tag}</td>`;
+        });
+        const t = riepilogo(d, giorni);
+        corpo += `<tr><td class="cn" title="${esc(orarioTesto(d))}"><span class="nome">${esc(nomeDip(d))}</span><span class="sub">${esc(orarioBreve(d))}</span></td>${celle}
+            <td class="tt sep" style="color:var(--P)">${t.P}</td><td class="tt" style="color:var(--F)">${t.F}</td><td class="tt" style="color:var(--R)">${ore(t.ROL + t.EF)}</td>
+            <td class="tt" style="color:var(--M)">${t.M}</td><td class="tt" style="color:var(--A)">${t.A}</td><td class="tt" style="color:var(--KO)">${t.KO}</td></tr>`;
     }
-    const testa = giorni.map(g => { const dow = new Date(g + 'T12:00').getDay(); return `<th class="${dow === 0 || dow === 6 ? 'we' : ''} ${g === oggi ? 'oggi' : ''}"><span class="gs">${INIZIALI[dow]}</span>${Number(g.slice(8))}</th>`; }).join('');
-    const leg = [['P', 'P', 'Presente'], ['F', 'F', 'Ferie'], ['R', 'R', 'Permesso ROL'], ['EF', 'EF', 'Ex festività'], ['M', 'M', 'Malattia'], ['A', 'A', 'Altra assenza'], ['KO', '✕', 'Assente non giustificato'], ['OFF', '·', 'Non in turno']];
-    $('v-foglio').innerHTML = `<div class="titolo"><div><h2>Scheda presenze · ${esc(nomeMese(meseSel))}</h2><p>Clicca una casella per segnare presenza, ferie, permessi o malattia.</p></div>
-        <div class="row noprint">${frecceMese()}<button class="b b2" id="f-csv">Esporta CSV</button><button class="b" onclick="print()">Stampa</button></div></div>
-        <div class="card"><div class="tab-wrap"><table class="foglio">
-            <thead><tr><th class="col-nome">Dipendente</th>${testa}<th class="tot sep" title="Presenze">P</th><th class="tot" title="Ferie">F</th><th class="tot" title="Permessi ROL ed ex festività">R</th><th class="tot" title="Malattia">M</th><th class="tot" title="Altre assenze">A</th><th class="tot" title="Assenze non giustificate">✕</th></tr></thead>
-            <tbody>${corpo || `<tr><td class="col-nome muted">Nessun dipendente attivo.</td></tr>`}</tbody>
+    const testa = giorni.map(g => { const dow = new Date(g + 'T12:00').getDay(), fs = festivo(g); return `<th class="${dow === 0 || dow === 6 ? 'we' : ''} ${fs ? 'fest' : ''} ${g === oggi ? 'oggi' : ''}" title="${esc(fs || '')}"><span class="gs">${INIZIALI[dow]}</span>${Number(g.slice(8))}</th>`; }).join('');
+    const leg = [['P', 'P', 'Presente'], ['F', 'F', 'Ferie'], ['R', 'R', 'Permesso ROL'], ['EF', 'EF', 'Ex festività'], ['M', 'M', 'Malattia'], ['A', 'A', 'Altra assenza'], ['KO', '✕', 'Non giustificata'], ['FS', 'FS', 'Festività'], ['CH', 'CH', 'Studio chiuso'], ['OFF', '·', 'Fuori turno']];
+    $('v-foglio').innerHTML = `<div class="barra"><div><h1>Foglio presenze · ${esc(nomeMese(meseSel))}</h1><div class="sotto">Clic su una casella per registrare; trascina su più giorni per un periodo (es. ferie).</div></div>
+        ${barraMese(`<label>Cerca<input id="f-cerca" placeholder="Cognome o nome" value="${esc(filtro)}" style="width:170px;"></label><button class="btn sec" id="f-csv">Esporta CSV</button><button class="btn" onclick="print()">Stampa</button>`)}</div>
+        <div class="riquadro"><div class="scroll"><table class="foglio">
+            <thead><tr><th class="cn">Dipendente</th>${testa}<th class="tt sep" title="Giorni di presenza">Pres.</th><th class="tt" title="Giorni di ferie">Fer.</th><th class="tt" title="Ore di permesso ROL ed ex festività">Perm. h</th><th class="tt" title="Giorni di malattia">Mal.</th><th class="tt" title="Altre assenze (giorni)">Altro</th><th class="tt" title="Assenze non giustificate">N.G.</th></tr></thead>
+            <tbody>${corpo || `<tr><td class="cn muted">Nessun dipendente.</td></tr>`}</tbody>
+            <tfoot><tr><td class="cn">Presenti nel giorno</td>${presentiGiorno.map((n, i) => `<td>${giorni[i] <= oggi && n ? n : ''}</td>`).join('')}<td class="sep" colspan="6"></td></tr></tfoot>
         </table></div>
-        <div class="legenda">${leg.map(([c, s, t]) => `<span><i class="c-${c}">${s}</i>${t}</span>`).join('')}<span>• = presenza segnata a mano</span></div></div>`;
+        <div class="legenda">${leg.map(([c, s, t]) => `<span><i class="c-${c}">${s}</i>${t}</span>`).join('')}<span><i class="c-P" style="position:relative;">P<span class="tag">2</span></i>Presente con permesso (ore)</span><span>• inserita a mano</span></div></div>
+        <div class="firme"><div>Il responsabile del personale</div><div>Data</div></div>`;
     agganciaMese($('v-foglio'), vFoglio);
-    $('v-foglio').querySelectorAll('[data-cella]').forEach(td => td.onclick = (e) => {
-        e.stopPropagation();
-        const [id, g] = td.dataset.cella.split('|');
-        apriPop(td, dip(Number(id)), g);
-    });
-    $('f-csv').onclick = () => scaricaCsv(`scheda_presenze_${meseSel}.csv`, [
-        ['Dipendente', ...giorni.map(g => Number(g.slice(8))), 'Presenze', 'Ferie', 'ROL/Ex fest.', 'Malattia', 'Altre', 'Non giustificate'],
+    const cerca = $('f-cerca');
+    cerca.oninput = () => { filtro = cerca.value; const pos = cerca.selectionStart; vFoglio(); const c = $('f-cerca'); c.focus(); c.setSelectionRange(pos, pos); };
+    $('f-csv').onclick = () => scaricaCsv(`foglio_presenze_${meseSel}.csv`, [
+        ['Dipendente', ...giorni.map(g => Number(g.slice(8))), 'Presenze (gg)', 'Ferie (gg)', 'ROL (h)', 'Ex festività (h)', 'Malattia (gg)', 'Altre assenze (gg)', 'Non giustificate (gg)'],
         ...dips.map(d => {
-            const s = giorni.map(g => statoGiorno(d, g));
-            const c = (k) => s.filter(x => k.includes(x.codice)).length;
-            return [nomeDip(d), ...s.map(x => x.codice === 'KO' ? 'X' : x.codice === 'OFF' ? '' : x.sigla), c(['P']), c(['F']), c(['R', 'EF']), c(['M']), c(['A']), c(['KO'])];
+            const t = riepilogo(d, giorni);
+            return [nomeDip(d), ...giorni.map(g => { const s = statoGiorno(d, g); return s.codice === 'KO' ? 'X' : ['OFF', 'FUT'].includes(s.codice) ? '' : s.sigla + (s.codice === 'P' && s.orePerm ? '+' + ore(s.orePerm) + 'h' : ''); }),
+                t.P, t.F, ore(t.ROL), ore(t.EF), t.M, t.A, t.KO];
         })
     ]);
+    // Selezione: clic su un giorno, oppure trascinamento lungo la riga per un periodo
+    let sel = null;
+    const evidenzia = () => $('v-foglio').querySelectorAll('td.g').forEach(td => {
+        const dentro = sel && Number(td.dataset.d) === sel.d && td.dataset.g >= (sel.a < sel.b ? sel.a : sel.b) && td.dataset.g <= (sel.a < sel.b ? sel.b : sel.a);
+        td.classList.toggle('sel', !!dentro);
+    });
+    $('v-foglio').querySelectorAll('td.g').forEach(td => {
+        td.onmousedown = (e) => { e.preventDefault(); sel = { d: Number(td.dataset.d), a: td.dataset.g, b: td.dataset.g }; evidenzia(); };
+        td.onmouseenter = () => { if (sel && Number(td.dataset.d) === sel.d) { sel.b = td.dataset.g; evidenzia(); } };
+    });
+    document.onmouseup = () => {
+        if (!sel || vista !== 'foglio') return;
+        const s = sel; sel = null;
+        const dal = s.a < s.b ? s.a : s.b, al = s.a < s.b ? s.b : s.a;
+        apriFinestra(dip(s.d), dal, al, dal !== al ? 'ferie' : undefined);
+        evidenzia();
+    };
 }
 
-// Dettaglio di un dipendente, giorno per giorno
+// Scheda di un dipendente, giorno per giorno
 function vMese() {
     if (!dipSel || !dip(dipSel)) dipSel = attivi()[0]?.id || null;
     const d = dip(dipSel);
-    if (!d) { $('v-mese').innerHTML = '<div class="card muted">Nessun dipendente attivo.</div>'; return; }
-    const giorni = giorniMese(meseSel);
-    const conta = { P: 0, ass: 0, KO: 0 };
+    if (!d) { $('v-mese').innerHTML = '<div class="riquadro"><div class="corpo muted">Nessun dipendente attivo.</div></div>'; return; }
+    const giorni = giorniMese(meseSel), t = riepilogo(d, giorni), sl = saldo(d);
     const righe = giorni.map(g => {
-        const s = statoGiorno(d, g), dow = new Date(g + 'T12:00').getDay();
-        if (s.codice === 'P') conta.P++; else if (s.codice === 'KO') conta.KO++; else if (s.ass) conta.ass++;
-        const dett = s.p ? (s.p.manuale ? 'A mano' + (s.p.nota ? ': ' + s.p.nota : '') : `${s.p.dist} m dallo studio${s.p.acc ? ' · ± ' + s.p.acc + ' m' : ''}`) : '';
-        return `<tr style="${dow === 0 || dow === 6 ? 'background:#fafbfc;' : ''}"><td class="nome" style="white-space:nowrap;">${GIORNI[dow]} ${Number(g.slice(8))}</td>
-            <td>${pill(s)}</td><td class="muted">${esc(dett)}</td>
-            <td class="n noprint"><button class="link" data-cella="${d.id}|${g}">Modifica</button></td></tr>`;
+        const s = statoGiorno(d, g), dow = new Date(g + 'T12:00').getDay(), p = previste(d, g);
+        const dett = s.p ? (s.p.manuale ? 'Inserita a mano' + (s.p.nota ? ': ' + s.p.nota : '') : `Rilevata a ${s.p.dist} m dallo studio${s.p.acc ? ' (± ' + s.p.acc + ' m)' : ''}`) : '';
+        return `<tr><td class="nome" style="white-space:nowrap;">${GIORNI[dow]} ${Number(g.slice(8))}</td><td class="n">${p == null ? '' : p ? p + ' h' : '—'}</td>
+            <td>${etichetta(s)}</td><td class="muted">${esc(dett)}</td>
+            <td class="n noprint"><button class="lnk" data-gg="${g}">Registra…</button></td></tr>`;
     }).join('');
-    $('v-mese').innerHTML = `<div class="titolo"><div><h2>${esc(nomeDip(d))}</h2><p>${esc(nomeMese(meseSel))} · ${esc(orarioTesto(d))}</p></div>
-        <div class="row noprint"><label>Dipendente<select id="m-dip">${opzDip(dipSel)}</select></label>${frecceMese()}<button class="b b2" id="m-csv">Esporta CSV</button><button class="b" onclick="print()">Stampa</button></div></div>
-        <div class="kpi">
-            <div style="--c:var(--P)"><b>${conta.P}</b><span>Giorni presente</span></div>
-            <div style="--c:var(--F)"><b>${conta.ass}</b><span>Giorni con assenza registrata</span></div>
-            <div style="--c:var(--KO)"><b>${conta.KO}</b><span>Assenze non giustificate</span></div>
+    $('v-mese').innerHTML = `<div class="barra"><div><h1>${esc(nomeDip(d))}</h1><div class="sotto">${esc(nomeMese(meseSel))} · ${esc(orarioTesto(d))}${d.cf ? ' · C.F. ' + esc(d.cf) : ''}</div></div>
+        ${barraMese(`<label>Dipendente<select id="m-dip">${opzDip(dipSel)}</select></label><button class="btn sec" id="m-csv">Esporta CSV</button><button class="btn" onclick="print()">Stampa</button>`)}</div>
+        <div class="indici">
+            <div><span>Presenze (gg)</span><b style="color:var(--P)">${t.P}</b></div><div><span>Ferie (gg)</span><b>${t.F}</b></div>
+            <div><span>Permessi (h)</span><b>${ore(t.ROL + t.EF)}</b></div><div><span>Malattia (gg)</span><b>${t.M}</b></div>
+            <div><span>Non giustificate</span><b style="color:${t.KO ? 'var(--KO)' : 'inherit'}">${t.KO}</b></div>
+            <div><span>Ferie residue (gg)</span><b class="${sl.residuo.ferie < 0 ? 'neg' : ''}">${num(sl.residuo.ferie)}</b></div>
+            <div><span>ROL residui (h)</span><b class="${sl.residuo.rol < 0 ? 'neg' : ''}">${num(sl.residuo.rol)}</b></div>
         </div>
-        <div class="card" style="padding:0;"><div class="tab-wrap" style="border:0;"><table class="t">
-            <thead><tr><th style="width:110px;">Giorno</th><th>Stato</th><th>Dettaglio</th><th class="noprint"></th></tr></thead><tbody>${righe}</tbody>
-        </table></div></div>`;
+        <div class="riquadro"><div class="scroll"><table class="t">
+            <thead><tr><th style="width:90px;">Giorno</th><th class="n" style="width:70px;">Turno</th><th>Stato</th><th>Dettaglio</th><th class="noprint"></th></tr></thead><tbody>${righe}</tbody>
+        </table></div></div>
+        <div class="firme"><div>Firma del dipendente</div><div>Il responsabile del personale</div></div>`;
     agganciaMese($('v-mese'), vMese);
     $('m-dip').onchange = (e) => { dipSel = Number(e.target.value); vMese(); };
-    $('v-mese').querySelectorAll('[data-cella]').forEach(b => b.onclick = (e) => { e.stopPropagation(); apriPop(b, d, b.dataset.cella.split('|')[1]); });
-    $('m-csv').onclick = () => scaricaCsv(`presenze_${d.cognome}_${meseSel}.csv`, [['Giorno', 'Stato'], ...giorni.map(g => [g, statoGiorno(d, g).testo])]);
+    $('v-mese').querySelectorAll('[data-gg]').forEach(b => b.onclick = () => apriFinestra(d, b.dataset.gg, b.dataset.gg));
+    $('m-csv').onclick = () => scaricaCsv(`presenze_${d.cognome}_${meseSel}.csv`, [['Giorno', 'Turno (h)', 'Stato'], ...giorni.map(g => [g, previste(d, g) ?? '', statoGiorno(d, g).testo])]);
 }
 
 function vAssenze() {
-    const oggi = OGGI();
     const lista = D.assenze.slice().sort((a, b) => b.dal.localeCompare(a.dal));
-    $('v-assenze').innerHTML = `<div class="titolo"><div><h2>Ferie e assenze</h2><p>Ferie in giorni; permessi ROL ed ex festività in ore.</p></div></div>
-        <div class="card"><h3>Registra</h3>
-        <div class="row">
-            <label>Dipendente<select id="a-dip">${opzDip(dipSel)}</select></label>
-            <label>Tipo<select id="a-tipo">${Object.entries(TIPI).map(([k, v]) => `<option value="${k}">${v}</option>`).join('')}</select></label>
-            <label>Dal<input type="date" id="a-dal" value="${oggi}"></label>
-            <label>Al<input type="date" id="a-al" value="${oggi}"></label>
-            <label>Quantità<input type="number" step="0.5" min="0" id="a-q" style="width:110px;" placeholder="automatica"></label>
-            <label style="flex:1;min-width:180px;">Nota<input id="a-nota" placeholder="es. certificato n."></label>
-            <button class="b" id="a-salva">Registra</button>
-        </div>
-        <p class="muted" style="margin:12px 0 0;">Se la quantità è vuota si calcola dall'orario del dipendente. Per un permesso di 2 ore scrivi 2.</p></div>
-        <div class="card" style="padding:0;"><div class="tab-wrap" style="border:0;"><table class="t">
-            <thead><tr><th>Dipendente</th><th>Tipo</th><th>Dal</th><th>Al</th><th class="n">Scala</th><th>Nota</th><th></th></tr></thead>
-            <tbody>${lista.map(a => { const d = dip(a.dip); const unita = a.tipo === 'rol' || a.tipo === 'exfest' ? ' h' : ' gg'; return `<tr>
-                <td class="nome">${d ? esc(nomeDip(d)) : '?'}</td><td><span class="pill s-${SIGLA[a.tipo]}">${TIPI[a.tipo]}</span></td>
-                <td>${dataBreve(a.dal)}</td><td>${dataBreve(a.al)}</td><td class="n">${num(consumo(a))}${unita}</td>
-                <td class="muted">${esc(a.nota)}</td><td class="n"><button class="link rosso" data-del-a="${a.id}">Elimina</button></td></tr>`; }).join('')
-                || '<tr><td colspan="7" class="muted" style="text-align:center;padding:24px;">Nessuna assenza registrata.</td></tr>'}</tbody>
+    $('v-assenze').innerHTML = `<div class="barra"><div><h1>Ferie e permessi</h1><div class="sotto">Ferie in giorni, permessi ROL ed ex festività in ore. Si possono registrare anche dal foglio presenze.</div></div>
+        <div class="campi"><label>Dipendente<select id="a-dip">${opzDip(dipSel)}</select></label><button class="btn" id="a-nuova">Nuova registrazione…</button></div></div>
+        <div class="riquadro"><div class="scroll"><table class="t">
+            <thead><tr><th>Dipendente</th><th>Tipo</th><th>Dal</th><th>Al</th><th class="n">Scala dal saldo</th><th>Nota</th><th>Inserita il</th><th></th></tr></thead>
+            <tbody>${lista.map(a => { const d = dip(a.dip); return `<tr>
+                <td class="nome">${d ? esc(nomeDip(d)) : '?'}</td><td><span class="stato s-${SIGLA[a.tipo]}">${TIPI[a.tipo]}</span></td>
+                <td>${dataBreve(a.dal)}</td><td>${dataBreve(a.al)}</td><td class="n">${A_ORE(a.tipo) ? ore(consumo(a)) + ' h' : consumo(a) + ' gg'}</td>
+                <td class="muted">${esc(a.nota)}</td><td class="muted">${a.creato ? dataBreve(giorno(a.creato)) : ''}</td>
+                <td class="n"><button class="lnk rosso" data-del-a="${a.id}">Elimina</button></td></tr>`; }).join('')
+                || '<tr><td colspan="8" class="muted" style="text-align:center;padding:22px;">Nessuna registrazione.</td></tr>'}</tbody>
         </table></div></div>`;
-    $('a-salva').onclick = async () => {
-        try {
-            await api('/presenze/api/assenze', { method: 'POST', body: JSON.stringify({ dip: Number($('a-dip').value), tipo: $('a-tipo').value, dal: $('a-dal').value, al: $('a-al').value, quantita: Number($('a-q').value) || 0, nota: $('a-nota').value }) });
-            toast('Assenza registrata.'); await ricarica();
-        } catch (e) { alert(e.message); }
-    };
-    $('v-assenze').querySelectorAll('[data-del-a]').forEach(b => b.onclick = () => eliminaAssenza(D.assenze.find(a => a.id === Number(b.dataset.delA))));
+    $('a-nuova').onclick = () => { const d = dip(Number($('a-dip').value)); if (d) apriFinestra(d, OGGI(), OGGI(), 'ferie'); };
+    $('a-dip').onchange = (e) => { dipSel = Number(e.target.value); };
+    $('v-assenze').querySelectorAll('[data-del-a]').forEach(b => b.onclick = async () => {
+        const a = D.assenze.find(x => x.id === Number(b.dataset.delA));
+        if (!confirm(`Eliminare ${TIPI[a.tipo]} dal ${dataBreve(a.dal)} al ${dataBreve(a.al)}? Il saldo viene ricalcolato.`)) return;
+        await api('/presenze/api/assenze/' + a.id, { method: 'DELETE' }); avviso('Registrazione eliminata.'); await ricarica();
+    });
 }
 
 function vSaldi() {
     const anno = new Date().getFullYear();
     const righe = attivi().map(d => {
         const s = saldo(d);
-        const cella = (k) => `<td class="n"><b class="${s.residuo[k] < 0 ? 'neg' : ''}">${num(s.residuo[k])}</b><span class="sub">iniziale ${num(d.saldi[k])} · usati ${num(s.usato[k])}</span></td>`;
-        const malattia = D.assenze.filter(a => a.dip === d.id && a.tipo === 'malattia' && a.dal.startsWith(String(anno))).reduce((t, a) => t + giorniTra(a.dal, a.al).length, 0);
-        return `<tr><td class="nome">${esc(nomeDip(d))}</td><td style="font-family:ui-monospace,Consolas,monospace;font-size:13px;">${esc(d.cf) || '<span class="muted">—</span>'}</td>
-            <td>${d.saldi.al ? dataBreve(d.saldi.al) : '—'}</td>${cella('ferie')}${cella('rol')}${cella('exfest')}<td class="n">${malattia}</td></tr>`;
+        const cella = (k) => `<td class="n"><b class="${s.residuo[k] < 0 ? 'neg' : ''}">${num(s.residuo[k])}</b></td><td class="n muted">${num(d.saldi[k])}</td><td class="n muted">${num(s.usato[k])}</td>`;
+        const malattia = D.assenze.filter(a => a.dip === d.id && a.tipo === 'malattia' && a.dal.startsWith(String(anno))).reduce((t, a) => t + giorniTra(a.dal, a.al).filter(g => lavora(d, g)).length, 0);
+        return `<tr><td class="nome">${esc(nomeDip(d))}</td><td class="mono">${esc(d.cf) || '—'}</td><td>${d.saldi.al ? dataBreve(d.saldi.al) : '—'}</td>
+            ${cella('ferie')}${cella('rol')}${cella('exfest')}<td class="n">${malattia}</td></tr>`;
     }).join('');
-    $('v-saldi').innerHTML = `<div class="titolo"><div><h2>Saldi</h2><p>Residuo = saldo iniziale da busta paga − assenze registrate dopo quella data.</p></div>
-        <div class="row noprint"><button class="b" onclick="print()">Stampa</button></div></div>
-        <div class="card" style="padding:0;"><div class="tab-wrap" style="border:0;"><table class="t">
-            <thead><tr><th>Cognome e nome</th><th>Codice fiscale</th><th>Saldi al</th><th class="n">Ferie residue (gg)</th><th class="n">Permessi ROL (h)</th><th class="n">Ex festività (h)</th><th class="n">Malattia ${anno} (gg)</th></tr></thead>
+    $('v-saldi').innerHTML = `<div class="barra"><div><h1>Saldi ferie e permessi</h1><div class="sotto">Residuo = saldo iniziale da busta paga − registrazioni successive a quella data.</div></div>
+        <div class="campi noprint"><button class="btn sec" id="s-csv">Esporta CSV</button><button class="btn" onclick="print()">Stampa</button></div></div>
+        <div class="riquadro"><div class="scroll"><table class="t">
+            <thead><tr><th rowspan="2">Cognome e nome</th><th rowspan="2">Codice fiscale</th><th rowspan="2">Saldi al</th>
+                <th colspan="3" style="text-align:center;border-left:1px solid var(--linea);">Ferie (gg)</th><th colspan="3" style="text-align:center;border-left:1px solid var(--linea);">Permessi ROL (h)</th>
+                <th colspan="3" style="text-align:center;border-left:1px solid var(--linea);">Ex festività (h)</th><th rowspan="2" class="n">Malattia ${anno} (gg)</th></tr>
+                <tr>${'<th class="n" style="border-left:1px solid var(--linea);">Residuo</th><th class="n">Iniziale</th><th class="n">Goduti</th>'.repeat(3)}</tr></thead>
             <tbody>${righe}</tbody>
         </table></div></div>
-        <p class="muted">Le maturazioni mensili non sono calcolate: con la nuova busta paga aggiorna i saldi iniziali in "Dipendenti".</p>`;
+        <p class="muted">Le maturazioni mensili non sono calcolate: con la nuova busta paga aggiorna i saldi iniziali in "Anagrafica".</p>`;
+    $('s-csv').onclick = () => scaricaCsv(`saldi_${OGGI()}.csv`, [['Dipendente', 'Codice fiscale', 'Saldi al', 'Ferie residue', 'ROL residui', 'Ex festività residue'],
+        ...attivi().map(d => { const s = saldo(d); return [nomeDip(d), d.cf, d.saldi.al || '', num(s.residuo.ferie), num(s.residuo.rol), num(s.residuo.exfest)]; })]);
 }
 
 function vDip() {
     const tutti = D.dipendenti.slice().sort((a, b) => (b.attivo - a.attivo) || nomeDip(a).localeCompare(nomeDip(b)));
-    $('v-dip').innerHTML = `<div class="titolo"><div><h2>Dipendenti</h2><p>Il codice personale serve una volta sola, per collegare il telefono.</p></div>
-        <div class="row"><button class="b" data-edit="0">+ Nuovo dipendente</button></div></div>
-        <div class="card hidden" id="dip-form"></div>
-        <div class="card" style="padding:0;"><div class="tab-wrap" style="border:0;"><table class="t">
-            <thead><tr><th>Cognome e nome</th><th>Turno</th><th>Codice personale</th><th class="n">Telefoni</th><th>Stato</th><th></th></tr></thead>
-            <tbody>${tutti.map(d => `<tr style="${d.attivo ? '' : 'opacity:.55;'}"><td><span class="nome">${esc(nomeDip(d))}</span><span class="sub">${esc(d.cf) || 'codice fiscale mancante'}</span></td>
+    $('v-dip').innerHTML = `<div class="barra"><div><h1>Anagrafica dipendenti</h1><div class="sotto">Il codice personale serve una sola volta, per collegare il telefono del dipendente.</div></div>
+        <div class="campi"><button class="btn" data-edit="0">Nuovo dipendente</button></div></div>
+        <div class="riquadro hidden" id="dip-form"></div>
+        <div class="riquadro"><div class="scroll"><table class="t">
+            <thead><tr><th>Cognome e nome</th><th>Codice fiscale</th><th>Turno settimanale</th><th>Codice personale</th><th class="n">Telefoni collegati</th><th>Stato</th><th></th></tr></thead>
+            <tbody>${tutti.map(d => `<tr style="${d.attivo ? '' : 'color:var(--testo-3);'}"><td class="nome">${esc(nomeDip(d))}</td><td class="mono">${esc(d.cf) || '<span class="neg">mancante</span>'}</td>
                 <td class="muted">${esc(orarioTesto(d))}</td><td><span class="codice">${esc(d.codice)}</span></td><td class="n">${d.telefoni}</td>
-                <td><span class="pill ${d.attivo ? 's-P' : 's-OFF'}">${d.attivo ? 'Attivo' : 'Non attivo'}</span></td>
-                <td class="n"><button class="link" data-edit="${d.id}">Modifica</button></td></tr>`).join('')}</tbody>
+                <td><span class="stato ${d.attivo ? 's-P' : 's-OFF'}">${d.attivo ? 'Attivo' : 'Cessato'}</span></td>
+                <td class="n"><button class="lnk" data-edit="${d.id}">Modifica</button></td></tr>`).join('')}</tbody>
         </table></div></div>`;
     $('v-dip').querySelectorAll('[data-edit]').forEach(b => b.onclick = () => formDip(Number(b.dataset.edit)));
 }
@@ -478,21 +616,21 @@ function formDip(id) {
     const d = dip(id) || { nome: '', cognome: '', cf: '', attivo: true, telefoni: 0, orario: { 1: 8, 2: 8, 3: 8, 4: 8, 5: 8, 6: 0 }, saldi: { ferie: 0, rol: 0, exfest: 0, al: OGGI() } };
     const f = $('dip-form');
     f.classList.remove('hidden');
-    f.innerHTML = `<h3>${id ? 'Modifica · ' + esc(nomeDip(d)) : 'Nuovo dipendente'}</h3>
-        <div class="row"><label>Cognome<input id="f-cognome" value="${esc(d.cognome)}"></label><label>Nome<input id="f-nome" value="${esc(d.nome)}"></label>
-            <label>Codice fiscale<input id="f-cf" value="${esc(d.cf)}" maxlength="16" style="width:200px;text-transform:uppercase;"></label>
-            <label>Stato<select id="f-attivo"><option value="1">Attivo</option><option value="0" ${d.attivo ? '' : 'selected'}>Non attivo</option></select></label></div>
-        <h3 style="margin-top:20px;">Turno settimanale (ore)</h3>
-        <div class="row"><label style="flex-direction:row;align-items:center;gap:8px;"><input type="checkbox" id="f-libero" ${d.orario ? '' : 'checked'}> Senza orario fisso</label>
-            ${[1, 2, 3, 4, 5, 6].map(g => `<label>${GIORNI[g]}<input type="number" min="0" max="12" step="0.5" class="f-ore" data-g="${g}" value="${d.orario ? d.orario[g] || 0 : 0}" style="width:70px;"></label>`).join('')}</div>
-        <h3 style="margin-top:20px;">Saldi iniziali (da busta paga)</h3>
-        <div class="row"><label>Aggiornati al<input type="date" id="f-al" value="${d.saldi.al || ''}"></label>
-            <label>Ferie (gg)<input type="number" step="0.01" id="f-ferie" value="${d.saldi.ferie}" style="width:110px;"></label>
-            <label>ROL (h)<input type="number" step="0.01" id="f-rol" value="${d.saldi.rol}" style="width:110px;"></label>
-            <label>Ex festività (h)<input type="number" step="0.01" id="f-exfest" value="${d.saldi.exfest}" style="width:110px;"></label></div>
-        ${id ? `<div class="row" style="margin-top:16px;"><label style="flex-direction:row;align-items:center;gap:8px;"><input type="checkbox" id="f-nuovocod"> Genera nuovo codice personale</label>
-            <label style="flex-direction:row;align-items:center;gap:8px;"><input type="checkbox" id="f-scollega"> Scollega tutti i telefoni (${d.telefoni})</label></div>` : ''}
-        <div class="row" style="margin-top:20px;"><button class="b" id="f-salva">Salva</button><button class="b b2" id="f-annulla">Annulla</button></div>`;
+    f.innerHTML = `<div class="intesta">${id ? 'Modifica · ' + esc(nomeDip(d)) : 'Nuovo dipendente'}</div><div class="corpo">
+        <div class="campi"><label>Cognome<input id="f-cognome" value="${esc(d.cognome)}"></label><label>Nome<input id="f-nome" value="${esc(d.nome)}"></label>
+            <label>Codice fiscale<input id="f-cf" value="${esc(d.cf)}" maxlength="16" style="width:190px;text-transform:uppercase;"></label>
+            <label>Stato<select id="f-attivo"><option value="1">Attivo</option><option value="0" ${d.attivo ? '' : 'selected'}>Cessato</option></select></label></div>
+        <p class="sezione" style="margin-top:16px;">Turno settimanale (ore)</p>
+        <div class="campi"><label style="flex-direction:row;align-items:center;gap:6px;text-transform:none;"><input type="checkbox" id="f-libero" ${d.orario ? '' : 'checked'}> Senza orario fisso</label>
+            ${[1, 2, 3, 4, 5, 6].map(g => `<label>${GIORNI[g]}<input type="number" min="0" max="12" step="0.5" class="f-ore" data-g="${g}" value="${d.orario ? d.orario[g] || 0 : 0}" style="width:64px;"></label>`).join('')}</div>
+        <p class="sezione" style="margin-top:16px;">Saldi iniziali (da busta paga)</p>
+        <div class="campi"><label>Aggiornati al<input type="date" id="f-al" value="${d.saldi.al || ''}"></label>
+            <label>Ferie (gg)<input type="number" step="0.01" id="f-ferie" value="${d.saldi.ferie}" style="width:100px;"></label>
+            <label>ROL (h)<input type="number" step="0.01" id="f-rol" value="${d.saldi.rol}" style="width:100px;"></label>
+            <label>Ex festività (h)<input type="number" step="0.01" id="f-exfest" value="${d.saldi.exfest}" style="width:100px;"></label></div>
+        ${id ? `<div class="campi" style="margin-top:14px;"><label style="flex-direction:row;align-items:center;gap:6px;text-transform:none;"><input type="checkbox" id="f-nuovocod"> Genera nuovo codice personale</label>
+            <label style="flex-direction:row;align-items:center;gap:6px;text-transform:none;"><input type="checkbox" id="f-scollega"> Scollega i telefoni (${d.telefoni})</label></div>` : ''}
+        <div class="campi" style="margin-top:16px;"><button class="btn" id="f-salva">Salva</button><button class="btn sec" id="f-annulla">Annulla</button></div></div>`;
     f.scrollIntoView({ behavior: 'smooth', block: 'start' });
     $('f-annulla').onclick = () => f.classList.add('hidden');
     $('f-salva').onclick = async () => {
@@ -502,7 +640,7 @@ function formDip(id) {
                 id: id || undefined, nome: $('f-nome').value, cognome: $('f-cognome').value, cf: $('f-cf').value, attivo: $('f-attivo').value === '1', orario,
                 saldi: { al: $('f-al').value, ferie: $('f-ferie').value, rol: $('f-rol').value, exfest: $('f-exfest').value },
                 nuovoCodice: id ? $('f-nuovocod').checked : false, scollegaTelefoni: id ? $('f-scollega').checked : false }) });
-            toast('Dipendente salvato.'); await ricarica();
+            avviso('Dati salvati.'); await ricarica();
         } catch (e) { alert(e.message); }
     };
 }
@@ -510,31 +648,51 @@ function formDip(id) {
 function vImp() {
     const c = D.config;
     const url = `${location.origin}/timbra?k=${c.qrToken}`;
-    $('v-imp').innerHTML = `<div class="titolo noprint"><div><h2>Impostazioni</h2></div></div>
-        <div class="card noprint"><h3>Posizione dello studio</h3>
-        <p>${c.studio ? `<span class="pill s-P">Impostata</span> ${c.studio.lat.toFixed(5)}, ${c.studio.lng.toFixed(5)} — <a target="_blank" rel="noopener" href="https://maps.google.com/?q=${c.studio.lat},${c.studio.lng}">vedi sulla mappa</a>`
-            : '<span class="pill s-KO">Non impostata: le presenze sono bloccate finché non la imposti</span>'}</p>
-        <div class="row"><button class="b" id="i-pos">Usa la posizione di questo dispositivo</button>
-            <label>Raggio consentito (metri)<input type="number" id="i-raggio" value="${c.raggio}" min="30" max="1000" style="width:120px;"></label>
-            <button class="b b2" id="i-raggio-salva">Salva raggio</button></div>
-        <p class="muted" style="margin:12px 0 0;">Fallo da un <b>telefono</b>, stando in studio, con il GPS attivo: un PC fisso non ha il GPS e la sua posizione è approssimativa.</p></div>
-        <div class="card" style="text-align:center;padding:32px 18px;"><h2 style="margin:0 0 6px;">Registra la tua presenza</h2>
-        <p style="margin:0 0 18px;color:var(--testo-2);">Inquadra il QR con la fotocamera del telefono</p>
-        <div id="qr"></div><p class="muted" style="word-break:break-all;margin-top:14px;">${esc(url)}</p>
-        <div class="row noprint" style="justify-content:center;margin-top:10px;"><button class="b" onclick="print()">Stampa il QR</button>
-        <button class="b b2" id="i-nuovoqr">Genera un nuovo QR</button></div></div>`;
-    try { new QRCode($('qr'), { text: url, width: 280, height: 280 }); } catch (e) { $('qr').textContent = 'QR non disponibile: usa il link sotto.'; }
+    const chiusure = c.chiusure || [];
+    $('v-imp').innerHTML = `<div class="barra noprint"><div><h1>Impostazioni</h1></div></div>
+        <div class="riquadro noprint"><div class="intesta">Posizione dello studio</div><div class="corpo">
+            <p style="margin-top:0;">${c.studio ? `<span class="stato s-P">Impostata</span> ${c.studio.lat.toFixed(5)}, ${c.studio.lng.toFixed(5)} · <a target="_blank" rel="noopener" href="https://maps.google.com/?q=${c.studio.lat},${c.studio.lng}">vedi sulla mappa</a>`
+                : '<span class="stato s-KO">Non impostata: le presenze sono bloccate</span>'}</p>
+            <div class="campi"><button class="btn" id="i-pos">Usa la posizione di questo dispositivo</button>
+                <label>Raggio consentito (m)<input type="number" id="i-raggio" value="${c.raggio}" min="30" max="1000" style="width:110px;"></label>
+                <button class="btn sec" id="i-raggio-salva">Salva raggio</button></div>
+            <p class="muted" style="margin:10px 0 0;">Da impostare con un telefono, stando in studio e con il GPS attivo: un PC fisso non ha il GPS.</p></div></div>
+        <div class="riquadro noprint"><div class="intesta">Chiusure dello studio</div><div class="corpo">
+            <p class="muted" style="margin-top:0;">Nei giorni di chiusura (es. ferie collettive di agosto, ponti) nessuno risulta assente. Le festività nazionali e la Pasquetta sono già calcolate in automatico.</p>
+            <div class="campi"><label>Dal<input type="date" id="c-dal"></label><label>Al<input type="date" id="c-al"></label>
+                <label>Descrizione<input id="c-nota" placeholder="es. chiusura estiva" style="width:220px;"></label><button class="btn" id="c-agg">Aggiungi</button></div>
+            ${chiusure.length ? `<table class="t" style="margin-top:12px;"><thead><tr><th>Dal</th><th>Al</th><th>Descrizione</th><th></th></tr></thead><tbody>
+                ${chiusure.map((x, i) => `<tr><td>${dataBreve(x.dal)}</td><td>${dataBreve(x.al)}</td><td>${esc(x.nota)}</td><td class="n"><button class="lnk rosso" data-del-c="${i}">Elimina</button></td></tr>`).join('')}</tbody></table>` : ''}
+        </div></div>
+        <div class="riquadro"><div class="intesta noprint">QR da esporre in studio</div><div class="corpo" style="text-align:center;padding:28px;">
+            <div style="font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--testo-2);">Centro Dentale Corbo</div>
+            <h2 style="margin:6px 0 4px;">Registrazione presenza</h2>
+            <p style="margin:0 0 16px;color:var(--testo-2);">Inquadra il codice con la fotocamera del telefono</p>
+            <div id="qr"></div><p class="muted" style="word-break:break-all;margin-top:12px;">${esc(url)}</p>
+            <div class="campi noprint" style="justify-content:center;margin-top:8px;"><button class="btn" onclick="print()">Stampa il QR</button>
+            <button class="btn sec" id="i-nuovoqr">Genera un nuovo QR</button></div></div></div>`;
+    try { new QRCode($('qr'), { text: url, width: 260, height: 260 }); } catch (e) { $('qr').textContent = 'QR non disponibile: usa il link sotto.'; }
+    const salvaChiusure = async (lista) => { await api('/presenze/api/config', { method: 'POST', body: JSON.stringify({ chiusure: lista }) }); await ricarica(); };
+    $('c-agg').onclick = async () => {
+        const dal = $('c-dal').value, al = $('c-al').value || dal;
+        if (!dal || al < dal) return alert('Controlla le date.');
+        await salvaChiusure([...chiusure, { dal, al, nota: $('c-nota').value }]); avviso('Chiusura aggiunta.');
+    };
+    $('v-imp').querySelectorAll('[data-del-c]').forEach(b => b.onclick = async () => {
+        if (!confirm('Eliminare questa chiusura?')) return;
+        await salvaChiusure(chiusure.filter((_, i) => i !== Number(b.dataset.delC))); avviso('Chiusura eliminata.');
+    });
     $('i-pos').onclick = () => {
         if (!navigator.geolocation) return alert('Questo dispositivo non fornisce la posizione.');
         navigator.geolocation.getCurrentPosition(async (p) => {
             const acc = Math.round(p.coords.accuracy);
-            const avviso = acc > 40 ? `\n\nATTENZIONE: precisione scarsa. Conviene annullare e riprovare da un telefono con GPS, vicino a una finestra.` : '';
-            if (!confirm(`Posizione rilevata con precisione di ${acc} m.${avviso}\n\nImpostarla come posizione dello studio?`)) return;
+            const nota = acc > 40 ? '\n\nATTENZIONE: precisione scarsa. Conviene annullare e riprovare da un telefono con GPS, vicino a una finestra.' : '';
+            if (!confirm(`Posizione rilevata con precisione di ${acc} m.${nota}\n\nImpostarla come posizione dello studio?`)) return;
             await api('/presenze/api/config', { method: 'POST', body: JSON.stringify({ studio: { lat: p.coords.latitude, lng: p.coords.longitude } }) });
-            toast('Posizione dello studio salvata.'); await ricarica();
+            avviso('Posizione salvata.'); await ricarica();
         }, (e) => alert('Posizione non disponibile: ' + e.message), { enableHighAccuracy: true, timeout: 20000, maximumAge: 0 });
     };
-    $('i-raggio-salva').onclick = async () => { await api('/presenze/api/config', { method: 'POST', body: JSON.stringify({ raggio: $('i-raggio').value }) }); toast('Raggio salvato.'); await ricarica(); };
+    $('i-raggio-salva').onclick = async () => { await api('/presenze/api/config', { method: 'POST', body: JSON.stringify({ raggio: $('i-raggio').value }) }); avviso('Raggio salvato.'); await ricarica(); };
     $('i-nuovoqr').onclick = async () => {
         if (!confirm('Il QR stampato attuale smetterà di funzionare. Continuare?')) return;
         await api('/presenze/api/config', { method: 'POST', body: JSON.stringify({ nuovoQr: true }) }); await ricarica();
@@ -544,7 +702,7 @@ function vImp() {
 const VISTE = { oggi: vOggi, foglio: vFoglio, mese: vMese, assenze: vAssenze, saldi: vSaldi, dip: vDip, imp: vImp };
 let vista = 'oggi';
 function mostra(v) {
-    vista = v; chiudiPop();
+    vista = v; chiudiFinestra();
     $('nav').querySelectorAll('button').forEach(x => x.classList.toggle('on', x.dataset.v === v));
     Object.keys(VISTE).forEach(k => $('v-' + k).classList.toggle('hidden', k !== v));
     VISTE[v]();
@@ -557,7 +715,11 @@ async function avvia() {
     mostra(vista);
 }
 if (TOKEN) avvia().catch(() => esci());
-setInterval(() => { if (TOKEN && (vista === 'oggi' || vista === 'foglio') && $('pop').style.display !== 'block') ricarica().catch(() => {}); }, 60000);
+// Aggiornamento automatico ogni minuto, se non c'e' una finestra aperta e non si sta scrivendo
+setInterval(() => {
+    if (!TOKEN || $('velo').style.display === 'flex' || ['INPUT', 'SELECT'].includes(document.activeElement?.tagName)) return;
+    if (vista === 'oggi' || vista === 'foglio') ricarica().catch(() => {});
+}, 60000);
 </script>
 </body>
 </html>
