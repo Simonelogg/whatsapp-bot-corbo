@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Presenza - Centro Dentale Corbo</title>
+<style>
+    body { margin: 0; font-family: -apple-system, Segoe UI, Roboto, Arial, sans-serif; background: #f1f5f9; color: #0f172a; }
+    .box { max-width: 420px; margin: 0 auto; padding: 24px 16px; }
+    h1 { font-size: 20px; margin: 0 0 4px; color: #0d47a1; }
+    .sub { color: #64748b; margin-bottom: 20px; }
+    .card { background: #fff; border-radius: 14px; padding: 18px; box-shadow: 0 2px 8px rgba(0,0,0,.06); margin-bottom: 16px; }
+    .nome { font-size: 22px; font-weight: 700; margin-bottom: 14px; }
+    button { width: 100%; border: 0; border-radius: 12px; font-size: 20px; font-weight: 700; padding: 18px; margin-bottom: 12px; color: #fff; cursor: pointer; }
+    button:disabled { opacity: .5; }
+    .entra { background: #16a34a; } .neutro { background: #0d47a1; }
+    input { width: 100%; box-sizing: border-box; font-size: 24px; letter-spacing: 6px; text-align: center; padding: 12px; border: 1.5px solid #cbd5e1; border-radius: 10px; margin-bottom: 12px; }
+    #esito { padding: 14px; border-radius: 10px; font-weight: 600; display: none; margin-bottom: 16px; }
+    .ok { background: #dcfce7; color: #166534; } .ko { background: #fee2e2; color: #991b1b; }
+    ul { list-style: none; padding: 0; margin: 0; } li { padding: 6px 0; border-bottom: 1px solid #f1f5f9; font-size: 15px; }
+    .small { font-size: 13px; color: #64748b; text-align: center; }
+    a { color: #64748b; }
+</style>
+</head>
+<body>
+<div class="box">
+    <h1>Centro Dentale Corbo</h1>
+    <div class="sub">Registrazione presenza</div>
+    <div id="esito"></div>
+
+    <div class="card" id="abbina" style="display:none;">
+        <p>Primo utilizzo su questo telefono: inserisci il tuo <b>codice personale di 4 cifre</b> (te lo dà l'amministrazione). Non viene registrata nessuna presenza.</p>
+        <input id="codice" inputmode="numeric" maxlength="4" autocomplete="off">
+        <button class="neutro" id="btn-abbina">Collega il mio telefono</button>
+    </div>
+
+    <div class="card" id="timbra" style="display:none;">
+        <div class="nome" id="nome"></div>
+        <button class="entra" id="btn-P">SONO PRESENTE</button>
+        <div class="small">Serve il GPS attivo: la presenza si segna solo in studio.</div>
+    </div>
+
+    <div class="card" id="storico" style="display:none;">
+        <b>Ultime presenze</b>
+        <ul id="ultime"></ul>
+    </div>
+    <div class="small"><a href="#" id="scollega" style="display:none;">Non sei tu? Scollega questo telefono</a></div>
+</div>
+<script>
+const k = new URLSearchParams(location.search).get('k') || '';
+let device = '';
+try { device = localStorage.getItem('presenzeDevice') || ''; } catch (e) {}
+const $ = (id) => document.getElementById(id);
+
+function esito(testo, ok) {
+    const e = $('esito');
+    e.textContent = testo; e.className = ok ? 'ok' : 'ko'; e.style.display = 'block';
+}
+async function api(url, body) {
+    const r = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+    const j = await r.json().catch(() => ({}));
+    if (!r.ok) { const err = new Error(j.error || 'Errore di rete.'); err.status = r.status; throw err; }
+    return j;
+}
+const fmt = (g) => new Date(g + 'T12:00').toLocaleDateString('it-IT', { weekday: 'long', day: 'numeric', month: 'long' });
+
+async function carica() {
+    if (!k) { esito('Apri questa pagina inquadrando il QR esposto in studio.', false); return; }
+    if (!device) { $('abbina').style.display = 'block'; return; }
+    try {
+        const s = await api('/presenze/api/stato', { device });
+        $('nome').textContent = s.nome;
+        $('timbra').style.display = 'block';
+        $('scollega').style.display = 'inline';
+        const giaOggi = s.ultime[0] === s.oggi;
+        $('btn-P').textContent = giaOggi ? '✓ PRESENZA DI OGGI REGISTRATA' : 'SONO PRESENTE';
+        $('btn-P').disabled = giaOggi;
+        $('ultime').innerHTML = s.ultime.map(g => `<li>🟢 ${fmt(g)}</li>`).join('') || '<li>Nessuna</li>';
+        $('storico').style.display = 'block';
+    } catch (e) {
+        if (e.status === 401) { try { localStorage.removeItem('presenzeDevice'); } catch (x) {} device = ''; $('abbina').style.display = 'block'; }
+        else esito(e.message, false);
+    }
+}
+
+$('btn-abbina').addEventListener('click', async () => {
+    try {
+        const r = await api('/presenze/api/abbina', { k, codice: $('codice').value });
+        device = r.device;
+        try { localStorage.setItem('presenzeDevice', device); } catch (e) {}
+        $('abbina').style.display = 'none';
+        esito('Telefono collegato: ' + r.nome, true);
+        carica();
+    } catch (e) { esito(e.message, false); }
+});
+
+function posizione() {
+    return new Promise((ok, ko) => {
+        if (!navigator.geolocation) return ko(new Error('Questo telefono non fornisce la posizione.'));
+        navigator.geolocation.getCurrentPosition(
+            p => ok(p.coords),
+            err => ko(new Error(err.code === 1 ? 'Permesso posizione negato: consentilo nelle impostazioni del browser.' : 'Posizione non disponibile: attiva il GPS e riprova.')),
+            { enableHighAccuracy: true, timeout: 20000, maximumAge: 0 });
+    });
+}
+async function presente() {
+    $('btn-P').disabled = true;
+    esito('Rilevo la posizione…', true);
+    try {
+        const c = await posizione();
+        const r = await api('/presenze/api/timbra', { k, device, lat: c.latitude, lng: c.longitude, acc: c.accuracy });
+        esito(r.gia ? 'La presenza di oggi era già registrata.' : 'Presenza di oggi registrata. Buon lavoro!', true);
+    } catch (e) { esito(e.message, false); }
+    carica();
+}
+$('btn-P').addEventListener('click', presente);
+$('scollega').addEventListener('click', (ev) => {
+    ev.preventDefault();
+    if (!confirm('Scollegare questo telefono? Servirà di nuovo il codice personale.')) return;
+    try { localStorage.removeItem('presenzeDevice'); } catch (e) {}
+    location.reload();
+});
+carica();
+</script>
+</body>
+</html>

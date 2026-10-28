@@ -65,6 +65,10 @@ loadState();
 const { setupAnamnesiRoutes } = require('./anamnesi');
 const anamnesi = setupAnamnesiRoutes(app, { DATA_DIR, POLL_SECRET });
 
+// Modulo Presenze (timbrature da QR in studio, ferie e permessi)
+const { setupPresenzeRoutes } = require('./presenze');
+const presenze = setupPresenzeRoutes(app, { DATA_DIR, POLL_SECRET });
+
 // 0. Endpoint di salute e monitoraggio
 app.get('/health', (req, res) => {
     const currentMaxId = messageQueue.length ? Math.max(...messageQueue.map(m => m.id)) : 0;
@@ -240,6 +244,7 @@ function gracefulShutdown(signal) {
     try {
         saveState();
         if (anamnesi && anamnesi.saveAnamnesiState) anamnesi.saveAnamnesiState();
+        if (presenze && presenze.savePresenze) presenze.savePresenze();
     } catch (e) {
         console.error('Errore salvataggio durante shutdown:', e.message);
     }
