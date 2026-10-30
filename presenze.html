@@ -94,6 +94,10 @@
     .c-FS, .c-CH { background: var(--FS-bg); color: var(--FS); font-size: 10px; }
     .tag { position: absolute; right: 1px; bottom: 1px; font-size: 8.5px; line-height: 1; padding: 1px 2px; background: var(--R); color: #fff; border-radius: 1px; font-weight: 600; }
     .tag.st { bottom: auto; top: 1px; background: var(--S); }
+    .foglio td.g .sg { display: block; line-height: 1.1; }
+    .foglio td.g .oh { display: block; font-size: 9.5px; font-weight: 500; line-height: 1; margin-top: 2px; color: var(--testo-2); font-variant-numeric: tabular-nums; }
+    .foglio td.g .oh.piu { color: var(--S); font-weight: 700; }
+    .foglio td.g .oh.meno { color: var(--R); font-weight: 700; }
     .c-S { background: var(--S-bg); color: var(--S); }
     .man { position: absolute; left: 2px; top: 1px; font-size: 9px; color: var(--testo-2); }
     .legenda { display: flex; flex-wrap: wrap; gap: 6px 16px; padding: 10px 14px; border-top: 1px solid var(--linea); font-size: 12px; color: var(--testo-2); }
@@ -153,7 +157,8 @@
         .riquadro { border: 0; }
         .scroll { overflow: visible; }
         .foglio { font-size: 9px; }
-        .foglio td.g { width: 21px; min-width: 21px; height: 20px; }
+        .foglio td.g { width: 21px; min-width: 21px; height: 24px; }
+        .foglio td.g .oh { font-size: 7px; margin-top: 0; }
         .foglio .cn { min-width: 140px; max-width: 140px; position: static; padding: 2px 4px; }
         .firme { display: flex; justify-content: space-between; margin-top: 30px; font-size: 11px; }
         .firme div { border-top: 1px solid #000; width: 260px; padding-top: 4px; text-align: center; }
@@ -290,9 +295,14 @@ function statoGiorno(d, g) {
     const orePerm = ass.filter(a => A_ORE(a.tipo)).reduce((t, a) => t + oreAssenza(a, d, g), 0);
     const base = { p, ass, orePerm, str, oreStr };
     if ((p || str.length) && !lavora(d, g)) {
-        return { ...base, codice: 'S', sigla: 'S', testo: 'Straordinario fuori turno' + (oreStr ? ` ${ore(oreStr)} h` : ' (ore da indicare)') };
+        return { ...base, codice: 'S', sigla: 'S', oreLav: oreStr || null, testo: 'Straordinario fuori turno' + (oreStr ? ` ${ore(oreStr)} h` : ' (ore da indicare)') };
     }
-    if (p || str.length) return { ...base, codice: 'P', sigla: 'P', testo: 'Presente' + (p && p.manuale ? ' (inserita a mano)' : '') + (oreStr ? ` · straordinario ${ore(oreStr)} h` : '') + (orePerm ? ` · permesso ${ore(orePerm)} h` : '') };
+    // Ore lavorate = ore di turno − permessi + straordinari (senza orario fisso: 8)
+    if (p || str.length) {
+        const turno = previste(d, g) ?? 8;
+        return { ...base, codice: 'P', sigla: 'P', turno, oreLav: Math.max(0, turno - orePerm + oreStr),
+            testo: 'Presente' + (p && p.manuale ? ' (inserita a mano)' : '') + (oreStr ? ` · straordinario ${ore(oreStr)} h` : '') + (orePerm ? ` · permesso ${ore(orePerm)} h` : '') };
+    }
     const intera = ass.find(a => !parziale(a, d, g));
     if (intera) return { ...base, codice: SIGLA[intera.tipo], sigla: SIGLA[intera.tipo], testo: ass.map(a => TIPI[a.tipo] + (A_ORE(a.tipo) ? ` ${ore(oreAssenza(a, d, g))} h` : '') + (a.nota ? ' – ' + a.nota : '')).join(', ') };
     const fs = festivo(g); if (fs && inTurno(d, g)) return { ...base, codice: 'FS', sigla: 'FS', testo: fs };
@@ -334,9 +344,10 @@ function scaricaCsv(nome, righe) {
 // Riepilogo di un dipendente su un elenco di giorni
 function riepilogo(d, giorni) {
     // P = giorni di presenza (anche fuori turno), STR = ore di straordinario, SQ = giorni fuori turno senza ore
-    const t = { P: 0, F: 0, ROL: 0, EF: 0, M: 0, A: 0, KO: 0, STR: 0, SQ: 0 };
+    const t = { P: 0, F: 0, ROL: 0, EF: 0, M: 0, A: 0, KO: 0, STR: 0, SQ: 0, ORE: 0 };
     for (const g of giorni) {
         const s = statoGiorno(d, g);
+        t.ORE += s.oreLav || 0;
         if (s.codice === 'P' || s.codice === 'S') t.P++; else if (s.codice === 'KO') t.KO++;
         t.STR += s.oreStr;
         if (s.codice === 'S' && !s.oreStr) t.SQ++;
@@ -511,14 +522,15 @@ function vFoglio() {
         giorni.forEach((g, i) => {
             const s = statoGiorno(d, g), dow = new Date(g + 'T12:00').getDay();
             if (s.codice === 'P' || s.codice === 'S') presentiGiorno[i]++;
-            // Etichette piccole: viola in basso = ore di permesso, arancio in alto = ore di straordinario
-            const tag = (s.codice === 'P' && s.orePerm ? `<span class="tag">${ore(s.orePerm)}</span>` : (s.codice === 'FUT' && s.ass.length ? `<span class="tag">${SIGLA[s.ass[0].tipo]}</span>` : ''))
-                + (s.codice === 'S' || s.oreStr ? `<span class="tag st">${s.oreStr ? '+' + ore(s.oreStr) : '?'}</span>` : '');
-            celle += `<td class="g c-${s.codice} ${dow === 0 || dow === 6 ? 'we' : ''}" data-d="${d.id}" data-g="${g}" title="${esc(dataBreve(g) + (s.testo ? ' – ' + s.testo : ''))}">${s.p && s.p.manuale ? '<span class="man">•</span>' : ''}${s.sigla}${tag}</td>`;
+            // Sotto la sigla le ore lavorate: arancio se piu' del turno (straordinario), viola se meno (permesso)
+            const tag = s.codice === 'FUT' && s.ass.length ? `<span class="tag">${SIGLA[s.ass[0].tipo]}</span>` : '';
+            const oh = s.codice === 'S' ? `<span class="oh piu">${s.oreLav ? ore(s.oreLav) : '?'}</span>`
+                : s.codice === 'P' ? `<span class="oh ${s.oreLav > s.turno ? 'piu' : s.oreLav < s.turno ? 'meno' : ''}">${ore(s.oreLav)}</span>` : '';
+            celle += `<td class="g c-${s.codice} ${dow === 0 || dow === 6 ? 'we' : ''}" data-d="${d.id}" data-g="${g}" title="${esc(dataBreve(g) + (s.testo ? ' – ' + s.testo : ''))}">${s.p && s.p.manuale ? '<span class="man">•</span>' : ''}<span class="sg">${s.sigla}</span>${oh}${tag}</td>`;
         });
         const t = riepilogo(d, giorni);
         corpo += `<tr><td class="cn" title="${esc(orarioTesto(d))}"><span class="nome">${esc(nomeDip(d))}</span><span class="sub">${esc(orarioBreve(d))}</span></td>${celle}
-            <td class="tt sep" style="color:var(--P)">${t.P}</td><td class="tt" style="color:var(--F)">${t.F}</td><td class="tt" style="color:var(--R)">${ore(t.ROL + t.EF)}</td><td class="tt" style="color:var(--S)" title="${t.SQ ? t.SQ + ' giorni fuori turno senza ore indicate' : ''}">${ore(t.STR)}${t.SQ ? '<sup>?</sup>' : ''}</td>
+            <td class="tt sep" style="color:var(--P)">${t.P}</td><td class="tt">${ore(t.ORE)}</td><td class="tt" style="color:var(--F)">${t.F}</td><td class="tt" style="color:var(--R)">${ore(t.ROL + t.EF)}</td><td class="tt" style="color:var(--S)" title="${t.SQ ? t.SQ + ' giorni fuori turno senza ore indicate' : ''}">${ore(t.STR)}${t.SQ ? '<sup>?</sup>' : ''}</td>
             <td class="tt" style="color:var(--M)">${t.M}</td><td class="tt" style="color:var(--A)">${t.A}</td><td class="tt" style="color:var(--KO)">${t.KO}</td></tr>`;
     }
     const testa = giorni.map(g => { const dow = new Date(g + 'T12:00').getDay(), fs = festivo(g); return `<th class="${dow === 0 || dow === 6 ? 'we' : ''} ${fs ? 'fest' : ''} ${g === oggi ? 'oggi' : ''}" title="${esc(fs || '')}"><span class="gs">${INIZIALI[dow]}</span>${Number(g.slice(8))}</th>`; }).join('');
@@ -526,21 +538,21 @@ function vFoglio() {
     $('v-foglio').innerHTML = `<div class="barra"><div><h1>Foglio presenze · ${esc(nomeMese(meseSel))}</h1><div class="sotto">Clic su una casella per registrare; trascina su più giorni per un periodo (es. ferie).</div></div>
         ${barraMese(`<label>Cerca<input id="f-cerca" placeholder="Cognome o nome" value="${esc(filtro)}" style="width:170px;"></label><button class="btn sec" id="f-csv">Esporta CSV</button><button class="btn" onclick="print()">Stampa</button>`)}</div>
         <div class="riquadro"><div class="scroll"><table class="foglio">
-            <thead><tr><th class="cn">Dipendente</th>${testa}<th class="tt sep" title="Giorni di presenza">Pres.</th><th class="tt" title="Giorni di ferie">Fer.</th><th class="tt" title="Ore di permesso ROL ed ex festività">Perm. h</th><th class="tt" title="Ore di straordinario">Str. h</th><th class="tt" title="Giorni di malattia">Mal.</th><th class="tt" title="Altre assenze (giorni)">Altro</th><th class="tt" title="Assenze non giustificate">N.G.</th></tr></thead>
+            <thead><tr><th class="cn">Dipendente</th>${testa}<th class="tt sep" title="Giorni di presenza">Pres.</th><th class="tt" title="Ore lavorate nel mese">Ore</th><th class="tt" title="Giorni di ferie">Fer.</th><th class="tt" title="Ore di permesso ROL ed ex festività">Perm. h</th><th class="tt" title="Ore di straordinario">Str. h</th><th class="tt" title="Giorni di malattia">Mal.</th><th class="tt" title="Altre assenze (giorni)">Altro</th><th class="tt" title="Assenze non giustificate">N.G.</th></tr></thead>
             <tbody>${corpo || `<tr><td class="cn muted">Nessun dipendente.</td></tr>`}</tbody>
-            <tfoot><tr><td class="cn">Presenti nel giorno</td>${presentiGiorno.map((n, i) => `<td>${giorni[i] <= oggi && n ? n : ''}</td>`).join('')}<td class="sep" colspan="7"></td></tr></tfoot>
+            <tfoot><tr><td class="cn">Presenti nel giorno</td>${presentiGiorno.map((n, i) => `<td>${giorni[i] <= oggi && n ? n : ''}</td>`).join('')}<td class="sep" colspan="8"></td></tr></tfoot>
         </table></div>
-        <div class="legenda">${leg.map(([c, s, t]) => `<span><i class="c-${c}">${s}</i>${t}</span>`).join('')}<span><i class="c-P" style="position:relative;">P<span class="tag">2</span></i>Presente con permesso (ore)</span><span>• inserita a mano</span></div></div>
+        <div class="legenda">${leg.map(([c, s, t]) => `<span><i class="c-${c}">${s}</i>${t}</span>`).join('')}<span>Sotto la sigla le ore lavorate: <b style="color:var(--S)">arancio</b> più del turno (straordinario), <b style="color:var(--R)">viola</b> meno (permesso)</span><span>• inserita a mano</span></div></div>
         <div class="firme"><div>Il responsabile del personale</div><div>Data</div></div>`;
     agganciaMese($('v-foglio'), vFoglio);
     const cerca = $('f-cerca');
     cerca.oninput = () => { filtro = cerca.value; const pos = cerca.selectionStart; vFoglio(); const c = $('f-cerca'); c.focus(); c.setSelectionRange(pos, pos); };
     $('f-csv').onclick = () => scaricaCsv(`foglio_presenze_${meseSel}.csv`, [
-        ['Dipendente', ...giorni.map(g => Number(g.slice(8))), 'Presenze (gg)', 'Ferie (gg)', 'ROL (h)', 'Ex festività (h)', 'Straordinari (h)', 'Malattia (gg)', 'Altre assenze (gg)', 'Non giustificate (gg)'],
+        ['Dipendente', ...giorni.map(g => Number(g.slice(8))), 'Presenze (gg)', 'Ore lavorate', 'Ferie (gg)', 'ROL (h)', 'Ex festività (h)', 'Straordinari (h)', 'Malattia (gg)', 'Altre assenze (gg)', 'Non giustificate (gg)'],
         ...dips.map(d => {
             const t = riepilogo(d, giorni);
             return [nomeDip(d), ...giorni.map(g => { const s = statoGiorno(d, g); return s.codice === 'KO' ? 'X' : ['OFF', 'FUT'].includes(s.codice) ? '' : s.sigla + (s.codice === 'P' && s.orePerm ? '+' + ore(s.orePerm) + 'h' : ''); }),
-                t.P, t.F, ore(t.ROL), ore(t.EF), ore(t.STR), t.M, t.A, t.KO];
+                t.P, ore(t.ORE), t.F, ore(t.ROL), ore(t.EF), ore(t.STR), t.M, t.A, t.KO];
         })
     ]);
     // Selezione: clic su un giorno, oppure trascinamento lungo la riga per un periodo
@@ -578,7 +590,7 @@ function vMese() {
     $('v-mese').innerHTML = `<div class="barra"><div><h1>${esc(nomeDip(d))}</h1><div class="sotto">${esc(nomeMese(meseSel))} · ${esc(orarioTesto(d))}${d.cf ? ' · C.F. ' + esc(d.cf) : ''}</div></div>
         ${barraMese(`<label>Dipendente<select id="m-dip">${opzDip(dipSel)}</select></label><button class="btn sec" id="m-csv">Esporta CSV</button><button class="btn" onclick="print()">Stampa</button>`)}</div>
         <div class="indici">
-            <div><span>Presenze (gg)</span><b style="color:var(--P)">${t.P}</b></div><div><span>Ferie (gg)</span><b>${t.F}</b></div>
+            <div><span>Presenze (gg)</span><b style="color:var(--P)">${t.P}</b></div><div><span>Ore lavorate</span><b>${ore(t.ORE)}</b></div><div><span>Ferie (gg)</span><b>${t.F}</b></div>
             <div><span>Permessi (h)</span><b>${ore(t.ROL + t.EF)}</b></div><div><span>Straordinari (h)</span><b style="color:var(--S)">${ore(t.STR)}${t.SQ ? ' <small title="giorni fuori turno senza ore">+' + t.SQ + ' gg ?</small>' : ''}</b></div><div><span>Malattia (gg)</span><b>${t.M}</b></div>
             <div><span>Non giustificate</span><b style="color:${t.KO ? 'var(--KO)' : 'inherit'}">${t.KO}</b></div>
             <div><span>Ferie residue (gg)</span><b class="${sl.residuo.ferie < 0 ? 'neg' : ''}">${num(sl.residuo.ferie)}</b></div>
