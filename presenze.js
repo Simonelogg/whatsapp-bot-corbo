@@ -214,7 +214,8 @@ function setupPresenzeRoutes(app, { DATA_DIR, POLL_SECRET }) {
         res.json({ ok: true });
     });
 
-    const TIPI_ASSENZA = ['ferie', 'rol', 'exfest', 'malattia', 'altro'];
+    // 'straord' = ore di straordinario (quantita' = ore totali): sta qui per comodita', non scala saldi
+    const TIPI_ASSENZA = ['ferie', 'rol', 'exfest', 'malattia', 'altro', 'straord'];
     app.post('/presenze/api/assenze', admin, (req, res) => {
         const { dip, tipo, dal, quantita, nota } = req.body || {};
         const al = req.body.al || dal;
