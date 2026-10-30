@@ -96,7 +96,9 @@
     .tag.st { bottom: auto; top: 1px; background: var(--S); }
     .foglio td.g .sg { display: block; line-height: 1.1; }
     .foglio td.g .oh { display: block; font-size: 9.5px; font-weight: 500; line-height: 1; margin-top: 2px; color: var(--testo-2); font-variant-numeric: tabular-nums; }
-    .foglio td.g .oh.piu { color: var(--S); font-weight: 700; }
+    /* Giorno con straordinario: totale ore in bianco su arancio e striscia arancio in fondo alla casella */
+    .foglio td.g .oh.piu { display: inline-block; color: #fff; background: var(--S); font-weight: 700; padding: 1px 3px; border-radius: 2px; }
+    .foglio td.g.str { box-shadow: inset 0 -3px 0 var(--S); }
     .foglio td.g .oh.meno { color: var(--R); font-weight: 700; }
     .c-S { background: var(--S-bg); color: var(--S); }
     .man { position: absolute; left: 2px; top: 1px; font-size: 9px; color: var(--testo-2); }
@@ -526,7 +528,8 @@ function vFoglio() {
             const tag = s.codice === 'FUT' && s.ass.length ? `<span class="tag">${SIGLA[s.ass[0].tipo]}</span>` : '';
             const oh = s.codice === 'S' ? `<span class="oh piu">${s.oreLav ? ore(s.oreLav) : '?'}</span>`
                 : s.codice === 'P' ? `<span class="oh ${s.oreLav > s.turno ? 'piu' : s.oreLav < s.turno ? 'meno' : ''}">${ore(s.oreLav)}</span>` : '';
-            celle += `<td class="g c-${s.codice} ${dow === 0 || dow === 6 ? 'we' : ''}" data-d="${d.id}" data-g="${g}" title="${esc(dataBreve(g) + (s.testo ? ' – ' + s.testo : ''))}">${s.p && s.p.manuale ? '<span class="man">•</span>' : ''}<span class="sg">${s.sigla}</span>${oh}${tag}</td>`;
+            const titolo = dataBreve(g) + (s.testo ? ' – ' + s.testo : '') + (s.oreStr && s.codice === 'P' ? ` (turno ${ore(s.turno)} h + straordinario ${ore(s.oreStr)} h = ${ore(s.oreLav)} h)` : '');
+            celle += `<td class="g c-${s.codice} ${s.oreStr || s.codice === 'S' ? 'str' : ''} ${dow === 0 || dow === 6 ? 'we' : ''}" data-d="${d.id}" data-g="${g}" title="${esc(titolo)}"><span class="sg">${s.sigla}</span>${oh}${tag}</td>`;
         });
         const t = riepilogo(d, giorni);
         corpo += `<tr><td class="cn" title="${esc(orarioTesto(d))}"><span class="nome">${esc(nomeDip(d))}</span><span class="sub">${esc(orarioBreve(d))}</span></td>${celle}
@@ -542,7 +545,7 @@ function vFoglio() {
             <tbody>${corpo || `<tr><td class="cn muted">Nessun dipendente.</td></tr>`}</tbody>
             <tfoot><tr><td class="cn">Presenti nel giorno</td>${presentiGiorno.map((n, i) => `<td>${giorni[i] <= oggi && n ? n : ''}</td>`).join('')}<td class="sep" colspan="8"></td></tr></tfoot>
         </table></div>
-        <div class="legenda">${leg.map(([c, s, t]) => `<span><i class="c-${c}">${s}</i>${t}</span>`).join('')}<span>Sotto la sigla le ore lavorate: <b style="color:var(--S)">arancio</b> più del turno (straordinario), <b style="color:var(--R)">viola</b> meno (permesso)</span><span>• inserita a mano</span></div></div>
+        <div class="legenda">${leg.map(([c, s, t]) => `<span><i class="c-${c}">${s}</i>${t}</span>`).join('')}<span>Sotto la sigla le ore lavorate: <b style="color:#fff;background:var(--S);padding:0 3px;border-radius:2px;">12</b> totale con straordinario, <b style="color:var(--R)">6</b> meno del turno (permesso)</span></div></div>
         <div class="firme"><div>Il responsabile del personale</div><div>Data</div></div>`;
     agganciaMese($('v-foglio'), vFoglio);
     const cerca = $('f-cerca');
