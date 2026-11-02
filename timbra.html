@@ -37,7 +37,7 @@
     <div class="card" id="timbra" style="display:none;">
         <div class="nome" id="nome"></div>
         <button class="entra" id="btn-P">SONO PRESENTE</button>
-        <div class="small">Serve il GPS attivo: la presenza si segna solo in studio.</div>
+        <div class="small" id="gps-nota">Serve il GPS attivo: la presenza si segna solo in studio.</div>
     </div>
 
     <div class="card" id="storico" style="display:none;">
@@ -69,6 +69,8 @@ async function carica() {
     if (!device) { $('abbina').style.display = 'block'; return; }
     try {
         const s = await api('/presenze/api/stato', { device });
+        gpsAttivo = s.gps !== false;
+        $('gps-nota').style.display = gpsAttivo ? '' : 'none';
         $('nome').textContent = s.nome;
         $('timbra').style.display = 'block';
         $('scollega').style.display = 'inline';
@@ -103,12 +105,19 @@ function posizione() {
             { enableHighAccuracy: true, timeout: 20000, maximumAge: 0 });
     });
 }
+// Il pannello puo' spegnere il controllo GPS: allora non si chiede la posizione al telefono
+let gpsAttivo = true;
 async function presente() {
     $('btn-P').disabled = true;
-    esito('Rilevo la posizione…', true);
     try {
-        const c = await posizione();
-        const r = await api('/presenze/api/timbra', { k, device, lat: c.latitude, lng: c.longitude, acc: c.accuracy });
+        let r;
+        if (gpsAttivo) {
+            esito('Rilevo la posizione…', true);
+            const c = await posizione();
+            r = await api('/presenze/api/timbra', { k, device, lat: c.latitude, lng: c.longitude, acc: c.accuracy });
+        } else {
+            r = await api('/presenze/api/timbra', { k, device });
+        }
         esito(r.gia ? 'La presenza di oggi era già registrata.' : 'Presenza di oggi registrata. Buon lavoro!', true);
     } catch (e) { esito(e.message, false); }
     carica();

@@ -103,7 +103,7 @@ function setupPresenzeRoutes(app, { DATA_DIR, POLL_SECRET }) {
         const d = dipDaTelefono(req.body.device);
         if (!d) return res.status(401).json({ error: 'Telefono non abbinato.' });
         const ultime = db.presenze.filter(p => p.dip === d.id).map(p => p.giorno).sort().slice(-6).reverse();
-        res.json({ nome: `${d.nome} ${d.cognome}`, oggi: oggiRoma(), ultime });
+        res.json({ nome: `${d.nome} ${d.cognome}`, oggi: oggiRoma(), ultime, gps: db.config.gps !== false });
     });
 
     app.post('/presenze/api/timbra', (req, res) => {
@@ -111,24 +111,30 @@ function setupPresenzeRoutes(app, { DATA_DIR, POLL_SECRET }) {
         if (!qrValido(k)) return res.status(403).json({ error: 'QR non valido: inquadra il QR esposto in studio.' });
         const d = dipDaTelefono(device);
         if (!d) return res.status(401).json({ error: 'Telefono non abbinato.' });
-        if (!db.config.studio) return res.status(503).json({ error: 'Posizione dello studio non ancora impostata nel pannello.' });
-        if (typeof lat !== 'number' || typeof lng !== 'number') return res.status(400).json({ error: 'Posizione non disponibile: attiva il GPS.' });
-        // Controllo severo: nessuna tolleranza oltre il raggio, e posizioni imprecise rifiutate
-        // (una precisione oltre 100 m e' tipica di chi e' lontano o di una posizione approssimativa).
         const precisione = Number(acc);
-        if (!(precisione > 0)) return res.status(400).json({ error: 'Posizione non disponibile: attiva il GPS e riprova.' });
-        if (precisione > PRECISIONE_MAX) {
-            return res.status(403).json({ error: `Posizione troppo imprecisa (± ${Math.round(precisione)} m): attiva la posizione precisa e riprova.` });
-        }
-        const dist = distanza(db.config.studio, { lat, lng });
-        if (dist > db.config.raggio) {
-            return res.status(403).json({ error: `Sei a ${dist} m dallo studio: la presenza si segna solo in studio.` });
+        const haPosizione = typeof lat === 'number' && typeof lng === 'number' && precisione > 0;
+        let dist = null;
+        if (db.config.gps !== false) {
+            if (!db.config.studio) return res.status(503).json({ error: 'Posizione dello studio non ancora impostata nel pannello.' });
+            if (!haPosizione) return res.status(400).json({ error: 'Posizione non disponibile: attiva il GPS e riprova.' });
+            // Controllo severo: nessuna tolleranza oltre il raggio, e posizioni imprecise rifiutate
+            // (una precisione oltre 100 m e' tipica di chi e' lontano o di una posizione approssimativa).
+            if (precisione > PRECISIONE_MAX) {
+                return res.status(403).json({ error: `Posizione troppo imprecisa (± ${Math.round(precisione)} m): attiva la posizione precisa e riprova.` });
+            }
+            dist = distanza(db.config.studio, { lat, lng });
+            if (dist > db.config.raggio) {
+                return res.status(403).json({ error: `Sei a ${dist} m dallo studio: la presenza si segna solo in studio.` });
+            }
+        } else if (haPosizione && db.config.studio) {
+            // Controllo spento dal pannello: si accetta comunque, la distanza resta solo come informazione
+            dist = distanza(db.config.studio, { lat, lng });
         }
         const giorno = oggiRoma();
         const nome = `${d.nome} ${d.cognome}`;
         // Una sola presenza al giorno: riscansionare non crea doppioni
         if (db.presenze.some(p => p.dip === d.id && p.giorno === giorno)) return res.json({ ok: true, giorno, nome, gia: true });
-        db.presenze.push({ id: db.nextId++, dip: d.id, giorno, dist, acc: Math.round(precisione) });
+        db.presenze.push({ id: db.nextId++, dip: d.id, giorno, dist, acc: haPosizione ? Math.round(precisione) : null, senzaGps: db.config.gps === false || undefined });
         save();
         res.json({ ok: true, giorno, nome });
     });
@@ -146,7 +152,8 @@ function setupPresenzeRoutes(app, { DATA_DIR, POLL_SECRET }) {
     });
 
     app.post('/presenze/api/config', admin, (req, res) => {
-        const { studio, raggio, nuovoQr, chiusure } = req.body || {};
+        const { studio, raggio, nuovoQr, chiusure, gps } = req.body || {};
+        if (typeof gps === 'boolean') db.config.gps = gps;
         // Periodi di chiusura dello studio (es. agosto): quei giorni non contano come assenze
         if (Array.isArray(chiusure)) {
             db.config.chiusure = chiusure

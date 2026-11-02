@@ -375,7 +375,7 @@ function apriFinestra(d, dal, al, tipoIniziale) {
     let situazione = '';
     if (singolo) {
         const righe = [];
-        if (s.p) righe.push(`<div><span><span class="stato s-P">Presente</span> ${s.p.manuale ? '<span class="muted">inserita a mano' + (s.p.nota ? ': ' + esc(s.p.nota) : '') + '</span>' : `<span class="muted">${s.p.dist} m dallo studio</span>`}</span><button class="lnk rosso" data-togli-p>Togli</button></div>`);
+        if (s.p) righe.push(`<div><span><span class="stato s-P">Presente</span> ${s.p.manuale ? '<span class="muted">inserita a mano' + (s.p.nota ? ': ' + esc(s.p.nota) : '') + '</span>' : `<span class="muted">${s.p.dist != null ? s.p.dist + ' m dallo studio' : 'con QR, senza controllo GPS'}</span>`}</span><button class="lnk rosso" data-togli-p>Togli</button></div>`);
         tutte.forEach(a => righe.push(`<div><span><span class="stato s-${SIGLA[a.tipo]}">${TIPI[a.tipo]}</span> <span class="muted">${a.dal !== a.al ? dataBreve(a.dal) + ' – ' + dataBreve(a.al) : ''}${a.tipo === 'straord' ? ' ' + ore(oreStraord(a)) + ' h' : A_ORE(a.tipo) ? ' ' + ore(oreAssenza(a, d, dal)) + ' h' : ''}${a.nota ? ' · ' + esc(a.nota) : ''}</span></span><button class="lnk rosso" data-del-a="${a.id}">Elimina</button></div>`));
         const fs = festivo(dal), ch = chiusura(dal);
         if (fs) righe.push(`<div><span class="stato s-FS">${esc(fs)}</span></div>`);
@@ -585,7 +585,7 @@ function vMese() {
     const giorni = giorniMese(meseSel), t = riepilogo(d, giorni), sl = saldo(d);
     const righe = giorni.map(g => {
         const s = statoGiorno(d, g), dow = new Date(g + 'T12:00').getDay(), p = previste(d, g);
-        const dett = s.p ? (s.p.manuale ? 'Inserita a mano' + (s.p.nota ? ': ' + s.p.nota : '') : `Rilevata a ${s.p.dist} m dallo studio${s.p.acc ? ' (± ' + s.p.acc + ' m)' : ''}`) : '';
+        const dett = s.p ? (s.p.manuale ? 'Inserita a mano' + (s.p.nota ? ': ' + s.p.nota : '') : s.p.dist != null ? `Rilevata a ${s.p.dist} m dallo studio${s.p.acc ? ' (± ' + s.p.acc + ' m)' : ''}${s.p.senzaGps ? ' · controllo GPS spento' : ''}` : 'Con QR, controllo GPS spento') : '';
         return `<tr><td class="nome" style="white-space:nowrap;">${GIORNI[dow]} ${Number(g.slice(8))}</td><td class="n">${p == null ? '' : p ? p + ' h' : '—'}</td>
             <td>${etichetta(s)}</td><td class="muted">${esc(dett)}</td>
             <td class="n noprint"><button class="lnk" data-gg="${g}">Registra…</button></td></tr>`;
@@ -707,6 +707,11 @@ function vImp() {
     const chiusure = c.chiusure || [];
     $('v-imp').innerHTML = `<div class="barra noprint"><div><h1>Impostazioni</h1></div></div>
         <div class="riquadro noprint"><div class="intesta">Posizione dello studio</div><div class="corpo">
+            <div class="campi" style="margin-bottom:12px;">
+                <label style="flex-direction:row;align-items:center;gap:8px;text-transform:none;font-size:13px;color:var(--testo);">
+                    <input type="checkbox" id="i-gps" ${c.gps !== false ? 'checked' : ''}> Controllo posizione GPS attivo</label>
+                ${c.gps === false ? '<span class="stato s-KO">Spento: chiunque abbia il telefono collegato segna la presenza anche fuori dallo studio</span>' : ''}
+            </div>
             <p style="margin-top:0;">${c.studio ? `<span class="stato s-P">Impostata</span> ${c.studio.lat.toFixed(5)}, ${c.studio.lng.toFixed(5)} · <a target="_blank" rel="noopener" href="https://maps.google.com/?q=${c.studio.lat},${c.studio.lng}">vedi sulla mappa</a>`
                 : '<span class="stato s-KO">Non impostata: le presenze sono bloccate</span>'}</p>
             <div class="campi"><button class="btn" id="i-pos">Usa la posizione di questo dispositivo</button>
@@ -747,6 +752,12 @@ function vImp() {
             await api('/presenze/api/config', { method: 'POST', body: JSON.stringify({ studio: { lat: p.coords.latitude, lng: p.coords.longitude } }) });
             avviso('Posizione salvata.'); await ricarica();
         }, (e) => alert('Posizione non disponibile: ' + e.message), { enableHighAccuracy: true, timeout: 20000, maximumAge: 0 });
+    };
+    $('i-gps').onchange = async (e) => {
+        const acceso = e.target.checked;
+        if (!acceso && !confirm('Spegnere il controllo GPS? La presenza si potrà segnare anche fuori dallo studio.')) { e.target.checked = true; return; }
+        await api('/presenze/api/config', { method: 'POST', body: JSON.stringify({ gps: acceso }) });
+        avviso(acceso ? 'Controllo GPS acceso.' : 'Controllo GPS spento.'); await ricarica();
     };
     $('i-raggio-salva').onclick = async () => { await api('/presenze/api/config', { method: 'POST', body: JSON.stringify({ raggio: $('i-raggio').value }) }); avviso('Raggio salvato.'); await ricarica(); };
     $('i-nuovoqr').onclick = async () => {
