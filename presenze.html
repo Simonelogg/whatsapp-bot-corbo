@@ -684,7 +684,8 @@ function formDip(id) {
             <label>Ferie (gg)<input type="number" step="0.01" id="f-ferie" value="${d.saldi.ferie}" style="width:100px;"></label>
             <label>ROL (h)<input type="number" step="0.01" id="f-rol" value="${d.saldi.rol}" style="width:100px;"></label>
             <label>Ex festività (h)<input type="number" step="0.01" id="f-exfest" value="${d.saldi.exfest}" style="width:100px;"></label></div>
-        ${id ? `<div class="campi" style="margin-top:14px;"><label style="flex-direction:row;align-items:center;gap:6px;text-transform:none;"><input type="checkbox" id="f-nuovocod"> Genera nuovo codice personale</label>
+        ${id ? `<div class="campi" style="margin-top:14px;"><label>Codice personale<input id="f-codice" value="${esc(d.codice || '')}" inputmode="numeric" maxlength="4" style="width:90px;letter-spacing:2px;"></label>
+            <label style="flex-direction:row;align-items:center;gap:6px;text-transform:none;"><input type="checkbox" id="f-nuovocod"> Genera nuovo codice personale</label>
             <label style="flex-direction:row;align-items:center;gap:6px;text-transform:none;"><input type="checkbox" id="f-scollega"> Scollega i telefoni (${d.telefoni})</label></div>` : ''}
         <div class="campi" style="margin-top:16px;"><button class="btn" id="f-salva">Salva</button><button class="btn sec" id="f-annulla">Annulla</button></div></div>`;
     f.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -695,6 +696,7 @@ function formDip(id) {
             await api('/presenze/api/dipendenti', { method: 'POST', body: JSON.stringify({
                 id: id || undefined, nome: $('f-nome').value, cognome: $('f-cognome').value, cf: $('f-cf').value, attivo: $('f-attivo').value === '1', orario,
                 saldi: { al: $('f-al').value, ferie: $('f-ferie').value, rol: $('f-rol').value, exfest: $('f-exfest').value },
+                codice: id && !$('f-nuovocod').checked && $('f-codice').value.trim() !== d.codice ? $('f-codice').value.trim() : undefined,
                 nuovoCodice: id ? $('f-nuovocod').checked : false, scollegaTelefoni: id ? $('f-scollega').checked : false }) });
             avviso('Dati salvati.'); await ricarica();
         } catch (e) { alert(e.message); }

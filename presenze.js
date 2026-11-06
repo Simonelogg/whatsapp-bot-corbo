@@ -182,9 +182,16 @@ function setupPresenzeRoutes(app, { DATA_DIR, POLL_SECRET }) {
         const b = req.body || {};
         if (!String(b.nome || '').trim() || !String(b.cognome || '').trim()) return res.status(400).json({ error: 'Nome e cognome obbligatori.' });
         let d = b.id && db.dipendenti.find(x => x.id === b.id);
+        // Codice personale scelto a mano: 4 cifre, diverso da quello degli altri dipendenti
+        const codice = b.codice == null || b.codice === '' ? null : String(b.codice).trim();
+        if (codice != null) {
+            if (!/^\d{4}$/.test(codice)) return res.status(400).json({ error: 'Il codice personale deve avere 4 cifre.' });
+            if (db.dipendenti.some(x => x !== d && x.codice === codice)) return res.status(400).json({ error: 'Codice personale già usato da un altro dipendente.' });
+        }
         if (!d) { d = { id: db.nextId++, codice: codiceNuovo() }; db.dipendenti.push(d); }
         pulisciDip(b, d);
-        if (b.nuovoCodice) d.codice = codiceNuovo();
+        if (codice != null) d.codice = codice;
+        else if (b.nuovoCodice) d.codice = codiceNuovo();
         if (b.scollegaTelefoni) for (const k of Object.keys(db.dispositivi)) if (db.dispositivi[k].dip === d.id) delete db.dispositivi[k];
         save();
         res.json(d);
