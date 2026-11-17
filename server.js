@@ -61,6 +61,28 @@ function saveState() {
 // Inizializza i dati all'avvio
 loadState();
 
+// ── Stati di consegna dei messaggi INVIATI dal gestionale (sent/delivered/read/failed) ──
+// Meta li manda allo stesso webhook ("statuses"): prima venivano scartati e un messaggio
+// accettato dall'API ma poi non consegnato risultava "inviato" senza alcuna spiegazione.
+// Coda separata (statuses.json), prelevata dal gestionale con GET /statuses.
+const STATUS_FILE = path.join(DATA_DIR, 'statuses.json');
+const MAX_STATUS = 3000;
+let statusQueue = [];
+let nextStatusId = 1;
+try {
+    if (fs.existsSync(STATUS_FILE)) {
+        const d = JSON.parse(fs.readFileSync(STATUS_FILE, 'utf8'));
+        if (d && Array.isArray(d.statusQueue)) { statusQueue = d.statusQueue; nextStatusId = d.nextStatusId || (statusQueue.length ? Math.max(...statusQueue.map(s => s.id)) + 1 : 1); }
+    }
+} catch (err) { console.error('⚠️  Errore nel caricamento degli stati:', err.message); }
+function saveStatuses() {
+    try {
+        if (!fs.existsSync(DATA_DIR)) fs.mkdirSync(DATA_DIR, { recursive: true });
+        fs.writeFileSync(`${STATUS_FILE}.tmp`, JSON.stringify({ nextStatusId, statusQueue }), 'utf8');
+        fs.renameSync(`${STATUS_FILE}.tmp`, STATUS_FILE);
+    } catch (err) { console.error('⚠️  Errore nel salvataggio degli stati:', err.message); }
+}
+
 // Modulo Anamnesi Digitale
 const { setupAnamnesiRoutes } = require('./anamnesi');
 const anamnesi = setupAnamnesiRoutes(app, { DATA_DIR, POLL_SECRET });
@@ -112,11 +134,22 @@ app.post('/webhook', (req, res) => {
     try {
         const entries = body.entry || [];
         let addedCount = 0;
+        let statiAggiunti = 0;
 
         for (const entry of entries) {
             const changes = entry.changes || [];
             for (const change of changes) {
                 const val = change.value;
+                // Stati di consegna dei messaggi inviati (vedi STATUS_FILE)
+                if (val && Array.isArray(val.statuses)) {
+                    for (const s of val.statuses) {
+                        const errori = (s.errors || []).map(e => ({ code: e.code, title: e.title || '', message: e.message || '', details: e.error_data?.details || '' }));
+                        statusQueue.push({ id: nextStatusId++, wamid: s.id, status: s.status, to: s.recipient_id, timestamp: s.timestamp ? new Date(parseInt(s.timestamp, 10) * 1000).toISOString() : new Date().toISOString(), errors: errori });
+                        statiAggiunti++;
+                        if (s.status === 'failed') console.warn(`❌ Messaggio NON consegnato a ${s.recipient_id}: ${errori.map(e => `[${e.code}] ${e.title} ${e.details}`).join(' | ')}`);
+                        else console.log(`📬 Stato "${s.status}" per ${s.recipient_id}`);
+                    }
+                }
                 if (!val || !val.messages || !Array.isArray(val.messages)) continue;
 
                 // Nome profilo mittente se fornito da Meta
@@ -200,11 +233,25 @@ app.post('/webhook', (req, res) => {
             }
             saveState();
         }
+        if (statiAggiunti > 0) {
+            if (statusQueue.length > MAX_STATUS) statusQueue = statusQueue.slice(statusQueue.length - MAX_STATUS);
+            saveStatuses();
+        }
     } catch (err) {
         console.error('❌ Errore elaborazione webhook Meta:', err);
     }
 
     res.sendStatus(200);
+});
+
+// Stati di consegna dopo "after" (ID dell'ultimo gia' prelevato dal gestionale)
+app.get('/statuses', (req, res) => {
+    if (!POLL_SECRET || req.query.key !== POLL_SECRET) return res.sendStatus(403);
+    const afterId = parseInt(req.query.after, 10) || 0;
+    const maxId = statusQueue.length ? statusQueue[statusQueue.length - 1].id : 0;
+    // Gestionale avanti rispetto al bot (coda azzerata): si riparte da capo
+    const da = afterId > maxId ? 0 : afterId;
+    res.json({ statuses: statusQueue.filter(s => s.id > da).slice(0, 500), maxId });
 });
 
 // 3. Endpoint interrogato dal gestionale per prelevare i messaggi nuovi.
